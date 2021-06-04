@@ -310,7 +310,11 @@ module.exports.checkAdminAccess = async (req, res, next) => {
     }
   );
   // if user details not found or role is not admin
-  if (!authUser || authUser.role != AccountContants.accRoles.admin) {
+  if (
+    !authUser ||
+    (authUser.role != AccountContants.accRoles.admin &&
+      authUser.role != AccountContants.accRoles.superAdmin)
+  ) {
     return res.status(401).json({
       status: Errors.FAILED,
       message: Errors.OPERATION_NOT_PERMITTED,

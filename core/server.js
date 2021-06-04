@@ -11,6 +11,7 @@ const swaggerDocument = YAML.load("./utils/swagger/swagger.yaml");
 // importing user routes
 const authRoute = require("../api/v1/routes/auth");
 const userRoute = require("../api/v1/routes/user");
+const instituteRoute = require("../api/v1/routes/institute");
 
 // importing admin routes
 const adminAuthRoute = require("../api/v1/routes/admin/auth");
@@ -64,6 +65,8 @@ function _setRoutes(app) {
   app.use("/api/v1/auth", authRoute);
   //  user middleware
   app.use("/api/v1/user", userRoute);
+  //  institute middleware
+  app.use("/api/v1/institute", instituteRoute);
 
   // admin routes
   // auth middleware

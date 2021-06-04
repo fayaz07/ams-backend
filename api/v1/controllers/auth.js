@@ -6,7 +6,6 @@ const Headers = require("../utils/constants").headers;
 const Errors = require("../utils/constants").errors;
 const Success = require("../utils/constants").successMessages;
 const UserControllers = require("../controllers/user");
-const { default: Axios } = require("axios");
 const Helpers = require("../../../core/helpers");
 const AccountConstants = require("../utils/constants").account;
 
@@ -64,7 +63,7 @@ module.exports.registerWithEmail = async (req, res, registerRole) => {
       });
     }
     // Print the error and sent back failed response
-    console.log(error);
+    // console.log(error);
     return res.status(403).json({
       status: Errors.FAILED,
       message: Errors.REGISTER_FAILED,
@@ -631,77 +630,6 @@ module.exports.enableUser = async (req, res) => {
   await _disableOrEnableUser(req, res, false);
 };
 
-/* Facebook login   
-    - sending access token to server to verify if the token is valid 
-    - if it's valid, then we will get user data in return
-    - [ERROR] if it's not valid, then we will just send an error response to the client
-    - check if user is existing/email being used by another account
-    - if existing, try login
-    - if new, try register
-*/
-module.exports.loginWithFB = async (req, res) => {
-  const userData = await getResponseFromURL(
-    Headers.FB_OAUTH_URL + req.body.accessToken
-  );
-
-  if (userData.error)
-    return res.status(403).json({
-      status: Errors.FAILED,
-      message: userData.error.message,
-    });
-
-  if (!userData.email)
-    return res.status(403).json({
-      status: Errors.FAILED,
-      message: Errors.FACEBOOK_LOGIN_FAILED,
-    });
-
-  var authUser = await getAuthUser(userData.email);
-  if (authUser) {
-    // login with facebook
-    tryOAuthLogin(authUser, res, req.body.accessToken, Headers.FACEBOOK_KEY);
-  } else {
-    // register with facebook
-    tryRegisterWithFacebook(userData, res, req.body.accessToken);
-  }
-};
-
-/* Google login   
-    - sending access token to server to verify if the token is valid 
-    - if it's valid, then we will get user data in return
-    - [ERROR] if it's not valid, then we will just send an error response to the client
-    - check if user is existing/email being used by another account
-    - if existing, try login
-    - if new, try register
-*/
-module.exports.loginWithGoogle = async (req, res) => {
-  // sending access token to server to verify if the token is valid and return the data
-  const userData = await getResponseFromURL(
-    Headers.GOOGLE_OAUTH_URL + req.body.accessToken
-  );
-
-  if (userData.error)
-    return res.status(403).json({
-      status: Errors.FAILED,
-      message: userData.error.error_description,
-    });
-
-  if (!userData.email)
-    return res.status(403).json({
-      status: Errors.FAILED,
-      message: Errors.FACEBOOK_GOOGLE_FAILED,
-    });
-
-  var authUser = await getAuthUser(userData.email);
-  if (authUser) {
-    // login with google
-    tryOAuthLogin(authUser, res, req.body.accessToken, Headers.GOOGLE_KEY);
-  } else {
-    // register with google
-    tryRegisterWithGoogle(userData, res, req.body.accessToken);
-  }
-};
-
 /*
   -------------------------------------------------------------------------------------
   Helper functions
@@ -825,14 +753,6 @@ async function _hashThePassword(password) {
 async function _comparePasswords(password, hashedPassword) {
   const validPass = await bcrypt.compare(password, hashedPassword);
   return validPass;
-}
-
-/* 
-  Makes a GET request to the specified URL and returns data
-*/
-async function getResponseFromURL(url) {
-  const res = await Axios.get(url);
-  return res.data;
 }
 
 /* Login user   
