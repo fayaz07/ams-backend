@@ -1,5 +1,5 @@
 {
-  "name": "node-rest-api-starter",
+  "name": "attendance-management-system",
   "version": "1.0.0",
   "description": "Template for node.js REST API (includes auth)",
   "main": "index.js",
@@ -12,15 +12,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fayaz07/node-rest-api-starter.git"
+    "url": "git+https://github.com/fayaz07/attendance-management-system.git"
   },
   "keywords": [],
-  "author": "Mohammad Fayaz(@fayaz07)",
+  "author": " (@fayaz07)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/fayaz07/node-rest-api-starter/issues"
+    "url": "https://github.com/fayaz07/attendance-management-system/issues"
   },
-  "homepage": "https://github.com/fayaz07/node-rest-api-starter#readme",
+  "homepage": "https://github.com/fayaz07/attendance-management-system#readme",
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",

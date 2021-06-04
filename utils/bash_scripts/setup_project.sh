@@ -2,7 +2,6 @@
 
 echo "------ Thank you for choosing node-rest-api-starter template -------"
 echo "------ Setting up your node-project -------"
-echo "------ Setting up your node-project -------"
 
 cp .env.example .env
 

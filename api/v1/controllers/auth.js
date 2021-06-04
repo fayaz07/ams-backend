@@ -832,85 +832,6 @@ async function getResponseFromURL(url) {
   return res.data;
 }
 
-/* Registers the user with Facebook   
-    - creates a new auth user instance and saves in db
-    - on successful save, login the user
-    - [ERROR] failed to save, send error response
-*/
-async function tryRegisterWithFacebook(fbUser, res, accessToken) {
-  const authUser = new Auth({
-    email: fbUser.email,
-    role: AccountConstants.accRoles.normalUser,
-    status: AccountConstants.accountStatus.active,
-    provider: Headers.FACEBOOK_KEY,
-    oauthToken: accessToken,
-  });
-
-  await authUser.save(async (error, savedUser) => {
-    if (savedUser) {
-      savedUser.firstName = fbUser.first_name;
-      savedUser.lastName = fbUser.last_name;
-      await _createUserDocument(savedUser);
-      loginUser(savedUser, Headers.FACEBOOK_KEY, res, true);
-    } else {
-      // Print the error and sent back failed response
-      console.log(error);
-      return res.status(403).json({
-        status: Errors.FAILED,
-        message: Errors.FB_REGISTER_FAILED,
-      });
-    }
-  });
-}
-
-/* Registers the user with Google   
-    - creates a new auth user instance and saves in db
-    - on successful save, login the user
-    - [ERROR] failed to save, send error response
-*/
-async function tryRegisterWithGoogle(googleUser, res, accessToken) {
-  const authUser = new Auth({
-    email: googleUser.email,
-    role: AccountConstants.accRoles.normalUser,
-    status: AccountConstants.accountStatus.active,
-    provider: Headers.GOOGLE_KEY,
-    oauthToken: accessToken,
-  });
-
-  await authUser.save(async (error, savedUser) => {
-    if (savedUser) {
-      savedUser.firstName = googleUser.name.toString().split(" ")[0];
-      savedUser.lastName = googleUser.name.toString().split(" ")[1];
-      savedUser.photoUrl = googleUser.picture;
-      await _createUserDocument(savedUser);
-      loginUser(savedUser, Headers.GOOGLE_KEY, res, true);
-    } else {
-      // Print the error and sent back failed response
-      console.log(error);
-      return res.status(403).json({
-        status: Errors.FAILED,
-        message: Errors.GOOGLE_REGISTER_FAILED,
-      });
-    }
-  });
-}
-
-/* Logs in the user - OAuth
-    - save the oauth access token
-    - login user
-*/
-async function tryOAuthLogin(authUser, res, accessToken, loginProvider) {
-  if (authUser.provider === loginProvider) {
-    authUser.oauthToken = accessToken;
-    loginUser(authUser, loginProvider, res, false);
-  } else {
-    return res.status(400).json({
-      status: Errors.FAILED,
-      message: Errors.EMAIL_IN_USE_BY_OTHER_PROVIDER,
-    });
-  }
-}
-
 /* Login user   
     - check if email is verified
     - check if access is denied for the user
@@ -955,16 +876,6 @@ async function loginUser(authUser, provider, res, isSignup) {
   });
 }
 
-/* Gets new access tokens from Facebook server   
-    - make a get request and return data
-*/
-async function _getNewFbAccessToken(oldAccessToken) {
-  const tokenData = await getResponseFromURL(
-    Headers.FB_OAUTH_REFRESH + oldAccessToken
-  );
-  return tokenData;
-}
-
 /* 
   Creates new access and refresh tokens and send back to client
 */
@@ -993,53 +904,6 @@ async function _generateNewTokensAndSendBackToClient(authUser, res) {
   });
 }
 
-/* 
-  Creates new access and refresh tokens and send back to client
-  - check if there is any issue with refreshing the token
-  - if the user has revoked the permission for this application in fb dashboard
-    then the user will be logged out here in the application too when he requests
-    for a new accessToken
-*/
-async function _refreshFbAccessToken(authUser, res) {
-  const newAccessTokenData = await _getNewFbAccessToken(authUser.oauthToken);
-
-  if (newAccessTokenData.error) {
-    console.log(
-      `Failed to get new accessToken from fb ${newAccessTokenData.message}`
-    );
-
-    if (
-      newAccessTokenData.message
-        .toString()
-        .toLowerCase()
-        .includes(Headers.EXPIRE)
-    ) {
-      return res.status(401).json({
-        status: Errors.FAILED,
-        message: Errors.SESSION_EXPIRED,
-        error: newAccessTokenData.message,
-      });
-    }
-
-    return res.status(403).json({
-      status: Errors.FAILED,
-      message: Errors.OAUTH_LOGIN_FAILED,
-      error: newAccessTokenData.message,
-    });
-  }
-
-  if (newAccessTokenData.access_token) {
-    // everything is fine, generate tokens and send back to client
-    authUser.oauthToken = newAccessTokenData.access_token;
-    _generateNewTokensAndSendBackToClient(authUser, res);
-  } else {
-    return res.status(403).json({
-      status: Errors.FAILED,
-      message: Errors.OAUTH_TOKEN_REFRESH_ERROR,
-    });
-  }
-}
-
 /*
   Verifies if the refreshToken is about to expire in less than a day
   if true : creates new refreshToken
@@ -1064,8 +928,6 @@ async function _createNewRefreshTokenIfAboutToExpire(authUser) {
   authUser.refreshToken = await JWTHandler.genRefreshToken(authUser._id);
   return authUser;
 }
-
-//function _refreshGoogleAccessToken(authUser, res) {}
 
 /*
   Create user document(only done while registration)

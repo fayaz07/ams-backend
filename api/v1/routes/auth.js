@@ -192,34 +192,5 @@ router.delete(
   }
 );
 
-/* login or register with facebook
-    - check if oauth access-token is passed
-*/
-router.post(
-  "/facebook",
-  AuthMiddlewares.checkOAuthAccessToken,
-  async (req, res) => {
-    try {
-      await AuthControllers.loginWithFB(req, res);
-    } catch (error) {
-      internalServerError(res, error);
-    }
-  }
-);
-
-/* login or register with google
-    - check if oauth access-token is passed
-*/
-router.post(
-  "/google",
-  AuthMiddlewares.checkOAuthAccessToken,
-  async (req, res) => {
-    try {
-      await AuthControllers.loginWithGoogle(req, res);
-    } catch (error) {
-      internalServerError(res, error);
-    }
-  }
-);
 
 module.exports = router;
