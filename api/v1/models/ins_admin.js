@@ -24,6 +24,9 @@ const instituteAdminSchema = new mongoose.Schema(
     },
     photoUrl: String,
     contactNo: String,
+    refreshToken: {
+      type: String,
+    },
   },
   {
     timestamps: true,

@@ -131,7 +131,7 @@ module.exports.loginWithEmail = async (req, res) => {
       .json({ status: Errors.FAILED, message: Errors.INVALID_EMAIL_PASSWORD });
 
   // validate the password
-  const validPass = await _comparePasswords(
+  const validPass = await comparePasswords(
     req.body.password,
     authUser.password
   );
@@ -188,7 +188,7 @@ module.exports.loginAsAdmin = async (req, res) => {
       .json({ status: Errors.FAILED, message: Errors.INVALID_EMAIL_PASSWORD });
 
   // validate the password
-  const validPass = await _comparePasswords(
+  const validPass = await comparePasswords(
     req.body.password,
     authUser.password
   );
@@ -294,7 +294,7 @@ module.exports.resendAccVerificatinToken = async (req, res) => {
     });
 
   // validate the password
-  const validPass = await _comparePasswords(
+  const validPass = await comparePasswords(
     req.body.password,
     authUser.password
   );
@@ -337,7 +337,7 @@ module.exports.updatePassword = async (req, res) => {
       .json({ status: Errors.FAILED, message: Errors.USER_NOT_EXISTS });
 
   // validate the password
-  const validPass = await _comparePasswords(
+  const validPass = await comparePasswords(
     req.body.oldPassword,
     authUser.password
   );
@@ -348,7 +348,7 @@ module.exports.updatePassword = async (req, res) => {
       message: Errors.INCORRECT_PASSWORD,
     });
 
-  const samePassword = await _comparePasswords(
+  const samePassword = await comparePasswords(
     req.body.newPassword,
     authUser.password
   );
@@ -457,7 +457,7 @@ module.exports.resetPassword = async (req, res) => {
       message: Errors.USER_NOT_EXISTS,
     });
 
-  const samePassword = await _comparePasswords(
+  const samePassword = await comparePasswords(
     req.body.password,
     authUser.password
   );
@@ -750,7 +750,7 @@ async function hashThePassword(password) {
 /* 
   Compare encrypted password and plain password
 */
-async function _comparePasswords(password, hashedPassword) {
+async function comparePasswords(password, hashedPassword) {
   const validPass = await bcrypt.compare(password, hashedPassword);
   return validPass;
 }
@@ -763,7 +763,7 @@ async function _comparePasswords(password, hashedPassword) {
     - save tokens and send back to client
 */
 async function loginUser(authUser, provider, res, isSignup) {
-  authUser = await _createNewRefreshTokenIfAboutToExpire(authUser);
+  authUser = await createNewRefreshTokenIfAboutToExpire(authUser);
 
   const accessToken = await JWTHandler.genAccessToken(authUser._id);
 
@@ -805,7 +805,7 @@ async function loginUser(authUser, provider, res, isSignup) {
 async function _generateNewTokensAndSendBackToClient(authUser, res) {
   const newAccessToken = await JWTHandler.genAccessToken(authUser._id);
 
-  authUser = await _createNewRefreshTokenIfAboutToExpire(authUser);
+  authUser = await createNewRefreshTokenIfAboutToExpire(authUser);
 
   await authUser.save(async (error, savedUser) => {
     if (savedUser) {
@@ -832,7 +832,7 @@ async function _generateNewTokensAndSendBackToClient(authUser, res) {
   if true : creates new refreshToken
   else : send the old token
 */
-async function _createNewRefreshTokenIfAboutToExpire(authUser) {
+async function createNewRefreshTokenIfAboutToExpire(authUser) {
   if (authUser.refreshToken) {
     const refreshTokenVerification = verifyRefreshToken(authUser.refreshToken);
     if (refreshTokenVerification.valid) {
@@ -863,3 +863,5 @@ module.exports.getAuthUser = getAuthUser;
 module.exports.getAuthUserWithProjection = getAuthUserWithProjection;
 module.exports.verifyRefreshToken = verifyRefreshToken;
 module.exports.hashThePassword = hashThePassword;
+module.exports.comparePasswords = comparePasswords;
+module.exports.createNewRefreshTokenIfAboutToExpire = createNewRefreshTokenIfAboutToExpire;

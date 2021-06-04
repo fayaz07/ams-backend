@@ -4,7 +4,7 @@ const AuthMiddlewares = require("../middlewares/auth");
 const InstituteAdminControllers = require("../controllers/ins_admin");
 
 router.post(
-  "/",
+  "/register",
   AuthMiddlewares.checkAccessToken,
   AuthMiddlewares.validateAccessToken,
   AuthMiddlewares.checkAdminAccess,
@@ -16,5 +16,13 @@ router.post(
     }
   }
 );
+
+router.post("/login", async (req, res) => {
+  try {
+    await InstituteAdminControllers.login(req, res);
+  } catch (error) {
+    internalServerError(res, error);
+  }
+});
 
 module.exports = router;
