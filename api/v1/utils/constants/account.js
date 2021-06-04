@@ -8,7 +8,12 @@ const getValuesArrayFromMap = require("../../../../core/helpers")
 
 const accRoles = {
   normalUser: "normal_user",
+  student: "student",
+  teacher: "teacher",
+  instituteModerator: "institute_moderator",
+  instituteAdmin: "institute_admin",
   admin: "admin",
+  superAdmin: "super_admin"
 };
 
 const accountStatus = {

@@ -200,7 +200,10 @@ module.exports.loginAsAdmin = async (req, res) => {
     });
 
   // check if role is admin
-  if (authUser.role == AccountConstants.accRoles.admin) {
+  if (
+    authUser.role == AccountConstants.accRoles.admin ||
+    authUser.role == AccountConstants.accRoles.superAdmin
+  ) {
     // check if admin has got approval
     if (authUser.status == AccountConstants.accountStatus.adminApproved) {
       return loginUser(authUser, Headers.EMAIL_KEY, res, false);
