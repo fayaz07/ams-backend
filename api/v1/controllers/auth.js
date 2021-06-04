@@ -36,7 +36,7 @@ module.exports.registerWithEmail = async (req, res, registerRole) => {
       .status(409)
       .json({ status: Errors.FAILED, message: Errors.EMAIL_IN_USE });
 
-  const hashedPassword = await _hashThePassword(req.body.password);
+  const hashedPassword = await hashThePassword(req.body.password);
 
   // create user form data
   const newAuthUser = new Auth({
@@ -80,7 +80,7 @@ module.exports.registerAsAdmin = async (req, res) => {
       .status(409)
       .json({ status: Errors.FAILED, message: Errors.EMAIL_IN_USE });
 
-  const hashedPassword = await _hashThePassword(req.body.password);
+  const hashedPassword = await hashThePassword(req.body.password);
 
   // create user form data
   const newAuthUser = new Auth({
@@ -359,7 +359,7 @@ module.exports.updatePassword = async (req, res) => {
       message: Errors.OLD_PASSWORD_IS_SAME,
     });
 
-  authUser.password = await _hashThePassword(req.body.newPassword);
+  authUser.password = await hashThePassword(req.body.newPassword);
 
   await authUser.save(async (error, savedUser) => {
     if (savedUser)
@@ -468,7 +468,7 @@ module.exports.resetPassword = async (req, res) => {
       message: Errors.OLD_PASSWORD_IS_SAME,
     });
 
-  authUser.password = await _hashThePassword(req.body.password);
+  authUser.password = await hashThePassword(req.body.password);
 
   await TokenControllers.deleteOldToken(verificationToken._userId);
 
@@ -741,7 +741,7 @@ async function getAuthUserByEmail(email) {
 /* 
   Encrypt password and return the hashed password
 */
-async function _hashThePassword(password) {
+async function hashThePassword(password) {
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(password, salt);
   return hashPassword;
@@ -862,3 +862,4 @@ async function _createUserDocument(userData) {
 module.exports.getAuthUser = getAuthUser;
 module.exports.getAuthUserWithProjection = getAuthUserWithProjection;
 module.exports.verifyRefreshToken = verifyRefreshToken;
+module.exports.hashThePassword = hashThePassword;

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Institute = require("../models/institute");
 const Errors = require("../utils/constants").errors;
 const Success = require("../utils/constants").successMessages;
@@ -58,7 +59,14 @@ async function getInstituteByRegId(instituteId) {
   return await Institute.findOne({ regId: instituteId });
 }
 
+async function getInstituteById(instituteId) {
+  return await Institute.findById(
+    mongoose.Types.ObjectId(instituteId.toString())
+  );
+}
+
 module.exports = {
   addInstitute,
   getInstituteByRegId,
+  getInstituteById,
 };
