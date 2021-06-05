@@ -76,9 +76,23 @@ async function getInstitutes(req, res) {
   });
 }
 
+async function getCurrentInstitute(req, res) {
+  const institute = await Institute.findOne({
+    _id: mongoose.Types.ObjectId(req.authUser.instituteId.toString()),
+  });
+  return res.status(200).json({
+    status: Success.SUCCESS,
+    message: "Fetched your institute",
+    data: {
+      institute: institute,
+    },
+  });
+}
+
 module.exports = {
   addInstitute,
   getInstituteByRegId,
   getInstituteById,
   getInstitutes,
+  getCurrentInstitute,
 };

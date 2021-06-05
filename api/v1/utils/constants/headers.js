@@ -18,6 +18,7 @@ module.exports = Object.freeze({
   GOOGLE_OAUTH_URL:
     "https://www.googleapis.com/oauth2/v3/userinfo?access_token=",
   EMAIL_KEY: "Email",
+  USERNAME_KEY: "Username",
   GOOGLE_KEY: "Google",
   FACEBOOK_KEY: "Facebook",
 });

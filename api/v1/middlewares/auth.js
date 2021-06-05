@@ -4,8 +4,6 @@ const UserControllers = require("../controllers/user");
 const Headers = require("../utils/constants").headers;
 const Errors = require("../utils/constants").errors;
 const AccountContants = require("../utils/constants").account;
-const { getInsModeratorById } = require("../controllers/ins_moderator");
-const { getInsAdminById } = require("../controllers/ins_admin");
 const { getInstituteById } = require("../controllers/institute");
 
 /* register fields validation middleware
@@ -46,6 +44,12 @@ module.exports.validateLoginFields = (req, res, next) => {
   } else {
     sendError(passwordError, "", res);
   }
+};
+
+module.exports.validateUsernameLoginFields = (req, res, next) => {
+  const { error } = Validators.usernameLoginValidation(req.body);
+  if (error) return sendError(error.details[0].message, error, res);
+  next();
 };
 
 /* 
@@ -413,7 +417,7 @@ module.exports.checkInsAdminAccess = async (req, res, next) => {
     req.tokenData.authId
   );
 
-  const institute = await getInstituteById(req.body.instituteId);
+  const institute = await getInstituteById(insAdmin.instituteId);
   if (!institute || !institute._id) {
     return res.status(400).json({
       status: Errors.FAILED,
@@ -464,13 +468,12 @@ module.exports.checkInsModeratorAccess = async (req, res, next) => {
       message: `Your account status is ${authUser.status}.`,
     });
   }
-  req.authUser = authUser;
 
   const insAdmin = await UserControllers.fetchInstituteIdByUserId(
     req.tokenData.authId
   );
 
-  const institute = await getInstituteById(req.body.instituteId);
+  const institute = await getInstituteById(insAdmin.instituteId);
   if (!institute || !institute._id) {
     return res.status(400).json({
       status: Errors.FAILED,

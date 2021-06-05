@@ -17,12 +17,4 @@ router.post(
   }
 );
 
-router.post("/login", async (req, res) => {
-  try {
-    await InsModeratorControllers.login(req, res);
-  } catch (error) {
-    internalServerError(res, error);
-  }
-});
-
 module.exports = router;

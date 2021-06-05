@@ -19,6 +19,15 @@ const loginValidation = (data) => {
   return schema.validate(data);
 };
 
+const usernameLoginValidation = (data) => {
+  const schema = Joi.object({
+    username: Joi.string().min(3).max(256).required(),
+    password: Joi.string().min(6).required(),
+  });
+
+  return schema.validate(data);
+};
+
 const emailValidation = (data) => {
   const schema = Joi.object({
     email: Joi.string().min(6).max(256).required().email(),
@@ -47,8 +56,11 @@ const resetPasswordValidation = (data) => {
   return schema.validate(data);
 };
 
-module.exports.resetPasswordValidation = resetPasswordValidation;
-module.exports.updatePasswordValidation = updatePasswordValidation;
-module.exports.emailValidation = emailValidation;
-module.exports.registerValidation = registerValidation;
-module.exports.loginValidation = loginValidation;
+module.exports = {
+  usernameLoginValidation,
+  resetPasswordValidation,
+  updatePasswordValidation,
+  emailValidation,
+  registerValidation,
+  loginValidation,
+};

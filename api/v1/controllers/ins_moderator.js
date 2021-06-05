@@ -33,13 +33,11 @@ async function createInsModerator(req, res) {
   }
 
   const moderatorCreated = await registerInstituteUser({
-    name: institute.principal,
+    name: req.body.name,
     instituteId: institute._id,
     createdBy: req.tokenData.authId,
     role: AccountRoles.accRoles.instituteModerator,
   });
-
-  //  console.log(adminCreated);
 
   if (moderatorCreated.success) {
     return res.status(200).json({

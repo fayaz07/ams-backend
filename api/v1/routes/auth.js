@@ -63,6 +63,22 @@ router.post(
   }
 );
 
+/* user login route
+    - validate body
+    - validate password
+*/
+router.post(
+  "/login/username",
+  AuthMiddlewares.validateUsernameLoginFields,
+  async (req, res) => {
+    try {
+      await AuthControllers.loginWithUsername(req, res);
+    } catch (error) {
+      internalServerError(res, error);
+    }
+  }
+);
+
 /* 
   user account verification
 */
@@ -191,6 +207,5 @@ router.delete(
     }
   }
 );
-
 
 module.exports = router;

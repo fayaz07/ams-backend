@@ -8,6 +8,9 @@ const Success = require("../utils/constants").successMessages;
 const UserControllers = require("../controllers/user");
 const Helpers = require("../../../core/helpers");
 const AccountConstants = require("../utils/constants").account;
+const PasswordGenerator = require("generate-password");
+
+const emailSuffix = "@a-m-s.com";
 
 /* User registration with email   
     - check if email is existing/email being used by another provider
@@ -120,7 +123,7 @@ module.exports.registerInstituteUser = async (data) => {
 
   const availableUsername = await findAvailableUsername(username);
 
-  data.email = availableUsername + "@a-m-s.com";
+  data.email = availableUsername + emailSuffix;
 
   // check if user exists
   var authUser = await getAuthUserByEmail(data.email);
@@ -128,7 +131,16 @@ module.exports.registerInstituteUser = async (data) => {
   // never comes to this stage
   if (authUser) return { success: false, message: Errors.EMAIL_IN_USE };
 
-  const newPassword = require("crypto").randomBytes(8).toString("hex");
+  var newPassword = PasswordGenerator.generate({
+    length: 9,
+    numbers: true,
+    uppercase: true,
+    lowercase: true,
+    symbols: true,
+    strict: true,
+    exclude: "%&()/\\[]{}-+=~?|@#<>,.:;\"'*!`",
+  });
+
   const hashedPassword = await hashThePassword(newPassword);
 
   // create user form data
@@ -136,8 +148,8 @@ module.exports.registerInstituteUser = async (data) => {
     email: data.email,
     password: hashedPassword,
     role: data.role,
-    provider: Headers.EMAIL_KEY,
-    status: "active",
+    provider: Headers.USERNAME_KEY,
+    status: AccountConstants.accountStatus.active,
   });
 
   // creating user in database
@@ -268,6 +280,61 @@ module.exports.loginWithEmail = async (req, res) => {
             : `Your account is ${authUser.status}`,
       });
     }
+  }
+};
+
+/* User login with email   
+    - fetch user data
+    - [ERROR] if user not found in db, send an error response
+    - compare password and hashedpassword using bcrypt
+    - try login
+*/
+module.exports.loginWithUsername = async (req, res) => {
+  // check if user exists
+  var authUser = await getAuthUserByUsername(req.body.username);
+
+  if (!authUser)
+    return res.status(400).json({
+      status: Errors.FAILED,
+      message: "Username or Password is invalid",
+    });
+
+  // validate the password
+  const validPass = await comparePasswords(
+    req.body.password,
+    authUser.password
+  );
+  if (!validPass)
+    return res.status(400).json({
+      status: Errors.FAILED,
+      message: Errors.INCORRECT_PASSWORD,
+    });
+
+  // normal user no need for approval of user
+  if (
+    authUser.role == AccountConstants.accRoles.instituteAdmin ||
+    authUser.role == AccountConstants.accRoles.instituteModerator ||
+    authUser.role == AccountConstants.accRoles.teacher
+  ) {
+    // check for account active
+    if (authUser.status == AccountConstants.accountStatus.active) {
+      return loginUser(authUser, Headers.EMAIL_KEY, res);
+    } else {
+      // account status is different than approval
+      return res.status(401).json({
+        status: Errors.FAILED,
+        message:
+          authUser.status ==
+          AccountConstants.accountStatus.emailVerificationPending
+            ? Errors.ACCOUNT_NOT_VERIFIED
+            : `Your account is ${authUser.status}, contact support for more information`,
+      });
+    }
+  } else {
+    return res.status(401).json({
+      status: Errors.FAILED,
+      message: "You are not allowed to login here",
+    });
   }
 };
 
@@ -609,11 +676,6 @@ module.exports.refreshTokens = async (req, res) => {
   if (authUser.refreshToken === req.refreshToken) {
     if (authUser.provider === Headers.EMAIL_KEY) {
       _generateNewTokensAndSendBackToClient(authUser, res);
-    } else if (authUser.provider === Headers.GOOGLE_KEY) {
-      _generateNewTokensAndSendBackToClient(authUser, res);
-      // _refreshGoogleAccessToken(authUser, res);
-    } else if (authUser.provider === Headers.FACEBOOK_KEY) {
-      _refreshFbAccessToken(authUser, res);
     } else {
       console.log(`Invalid provider type ${authUser.provider}`);
       return res.status(403).json({
@@ -835,6 +897,20 @@ async function getAuthUserByEmail(email) {
 }
 
 /* 
+  Fetches authUser instance from db by email
+*/
+async function getAuthUserByUsername(username) {
+  const authUser = await Auth.findOne(
+    { email: username + emailSuffix },
+    {
+      createdAt: 0,
+      updatedAt: 0,
+    }
+  );
+  return authUser;
+}
+
+/* 
   Encrypt password and return the hashed password
 */
 async function hashThePassword(password) {
@@ -858,7 +934,7 @@ async function comparePasswords(password, hashedPassword) {
     - generate access and refresh tokens 
     - save tokens and send back to client
 */
-async function loginUser(authUser, provider, res, isSignup) {
+async function loginUser(authUser, provider, res) {
   authUser = await createNewRefreshTokenIfAboutToExpire(authUser);
 
   const accessToken = await JWTHandler.genAccessToken(authUser._id);
@@ -871,18 +947,10 @@ async function loginUser(authUser, provider, res, isSignup) {
         .header("Access-Control-Expose-Headers", "access_token, refresh_token")
         .header(Headers.ACCESS_TOKEN, accessToken)
         .header(Headers.REFRESH_TOKEN, authUser.refreshToken)
-        .json(
-          provider === Headers.EMAIL_KEY
-            ? {
-                status: Success.SUCCESS,
-                message: Success.LOGIN_SUCCESS,
-              }
-            : {
-                status: Success.SUCCESS,
-                message: Helpers.joinWithSpace(provider, Success.LOGIN_SUCCESS),
-                signup: isSignup,
-              }
-        );
+        .json({
+          status: Success.SUCCESS,
+          message: Success.LOGIN_SUCCESS,
+        });
     }
     // Print the error and sent back failed response
     console.log(error);

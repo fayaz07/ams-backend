@@ -63,6 +63,34 @@
 					"response": []
 				},
 				{
+					"name": "login using username",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"vijay.mallayya\",\n    \"password\": \"9oBJ_BTGi\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login/username",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login",
+								"username"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "verify user",
 					"request": {
 						"method": "GET",
@@ -625,6 +653,34 @@
 						"method": "GET",
 						"header": [],
 						"url": {
+							"raw": "{{baseUrl}}/institute/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"institute",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get my institute details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
 							"raw": "{{baseUrl}}/institute",
 							"host": [
 								"{{baseUrl}}"
@@ -678,34 +734,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "login",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\" : \"vijay.mallayya\",\n    \"password\":\"f13dae070d29bc7f\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/ins/admin/login",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"ins",
-								"admin",
-								"login"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -720,7 +748,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBUElfVVNFUlMiLCJzdWIiOiJBUElfQWNjZXNzVG9rZW4iLCJpc3MiOiJBTVMiLCJhdXRoSWQiOiI2MGJhNzNkMjNlZjAzY2I2NTYxMGM4YjUiLCJpYXQiOjE2MjI4MzIxNTksImV4cCI6MTYyMjkxODU1OX0.NmGrzA2fl1ABJVQ0G4ieIxMk6rfgludOs8y-gE4qDiYss5HOb4RqEBp9whpaCIg1TsLVK4zFakGCU0vMNGohFg",
+									"value": "{{access_token}}",
 									"type": "string"
 								}
 							]
@@ -745,34 +773,6 @@
 								"ins",
 								"moderator",
 								"register"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "login",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\": \"virat.kohli\",\n    \"password\": \"b64612e0000c71ce\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/ins/moderator/login",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"ins",
-								"moderator",
-								"login"
 							]
 						}
 					},
