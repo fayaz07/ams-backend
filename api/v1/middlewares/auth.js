@@ -1,5 +1,6 @@
 const Validators = require("../utils/validators");
 const AuthControllers = require("../controllers/auth");
+const UserControllers = require("../controllers/user");
 const Headers = require("../utils/constants").headers;
 const Errors = require("../utils/constants").errors;
 const AccountContants = require("../utils/constants").account;
@@ -384,9 +385,33 @@ module.exports.checkAdminAccess = async (req, res, next) => {
   Check if user's access has been revoked by the admin/account is verified
 */
 module.exports.checkInsAdminAccess = async (req, res, next) => {
-  const insAdmin = await getInsAdminById(req.tokenData.authId);
+  var authUser = await AuthControllers.getAuthUserWithProjection(
+    req.tokenData.authId,
+    {
+      _id: 1,
+      role: 1,
+      status: 1,
+    }
+  );
+  // if user details not found or role is not admin
+  if (!authUser || authUser.role != AccountContants.accRoles.instituteAdmin) {
+    return res.status(401).json({
+      status: Errors.FAILED,
+      message: Errors.OPERATION_NOT_PERMITTED,
+    });
+  }
 
-  // console.log(insAdmin);
+  if (authUser.status != AccountContants.accountStatus.active) {
+    return res.status(401).json({
+      status: Errors.FAILED,
+      message: `Your account status is ${authUser.status}.`,
+    });
+  }
+  req.authUser = authUser;
+
+  const insAdmin = await UserControllers.fetchInstituteIdByUserId(
+    req.tokenData.authId
+  );
 
   const institute = await getInstituteById(req.body.instituteId);
   if (!institute || !institute._id) {
@@ -395,17 +420,13 @@ module.exports.checkInsAdminAccess = async (req, res, next) => {
       message: "Institute not found/deleted",
     });
   }
-  // console.log(institute);
-  // console.log(institute._id);
-  // console.log(insAdmin.instituteId);
-  // console.log(institute._id.toString() === insAdmin.instituteId.toString());
+
   if (
     insAdmin &&
     insAdmin._id &&
     institute._id.toString() === insAdmin.instituteId.toString()
   ) {
     req.institute = institute;
-
     req.authUser = insAdmin;
     next();
   } else {
@@ -417,9 +438,37 @@ module.exports.checkInsAdminAccess = async (req, res, next) => {
 };
 
 module.exports.checkInsModeratorAccess = async (req, res, next) => {
-  const insModerator = await getInsModeratorById(req.tokenData.authId);
+  var authUser = await AuthControllers.getAuthUserWithProjection(
+    req.tokenData.authId,
+    {
+      _id: 1,
+      role: 1,
+      status: 1,
+    }
+  );
+  // if user details not found or role is not admin
+  if (
+    !authUser ||
+    (authUser.role != AccountContants.accRoles.instituteModerator &&
+      authUser.role != AccountContants.accRoles.instituteAdmin)
+  ) {
+    return res.status(401).json({
+      status: Errors.FAILED,
+      message: Errors.OPERATION_NOT_PERMITTED,
+    });
+  }
 
-  // console.log(insAdmin);
+  if (authUser.status != AccountContants.accountStatus.active) {
+    return res.status(401).json({
+      status: Errors.FAILED,
+      message: `Your account status is ${authUser.status}.`,
+    });
+  }
+  req.authUser = authUser;
+
+  const insAdmin = await UserControllers.fetchInstituteIdByUserId(
+    req.tokenData.authId
+  );
 
   const institute = await getInstituteById(req.body.instituteId);
   if (!institute || !institute._id) {
@@ -428,18 +477,14 @@ module.exports.checkInsModeratorAccess = async (req, res, next) => {
       message: "Institute not found/deleted",
     });
   }
-  // console.log(institute);
-  // console.log(institute._id);
-  // console.log(insAdmin.instituteId);
-  // console.log(institute._id.toString() === insAdmin.instituteId.toString());
+
   if (
-    insModerator &&
-    insModerator._id &&
-    institute._id.toString() === insModerator.instituteId.toString()
+    insAdmin &&
+    insAdmin._id &&
+    institute._id.toString() === insAdmin.instituteId.toString()
   ) {
     req.institute = institute;
-
-    req.authUser = insModerator;
+    req.authUser = insAdmin;
     next();
   } else {
     return res.status(401).json({

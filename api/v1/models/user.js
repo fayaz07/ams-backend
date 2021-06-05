@@ -1,8 +1,23 @@
 const mongoose = require("mongoose");
 const { USER_COLLECTION } = require("../utils/constants").collections;
+const account = require("../utils/constants").account;
 
 const userSchema = new mongoose.Schema(
   {
+    instituteId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    role: {
+      type: String,
+      default: account.accRoles.normalUser,
+      enum: account.accRolesList,
+      required: true,
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -10,12 +25,12 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
       unique: true,
     },
     username: {
       type: String,
       unique: true,
+      required: true,
     },
     firstName: String,
     lastName: String,
@@ -29,7 +44,6 @@ const userSchema = new mongoose.Schema(
     latitude: Number,
     longitude: Number,
     photoUrl: String,
-    symptoms: String,
   },
   {
     timestamps: true,

@@ -115,6 +115,102 @@ module.exports.registerAsAdmin = async (req, res) => {
   });
 };
 
+module.exports.registerInstituteUser = async (data) => {
+  const username = createUsername(data.name);
+
+  const availableUsername = await findAvailableUsername(username);
+
+  data.email = availableUsername + "@a-m-s.com";
+
+  // check if user exists
+  var authUser = await getAuthUserByEmail(data.email);
+
+  // never comes to this stage
+  if (authUser) return { success: false, message: Errors.EMAIL_IN_USE };
+
+  const newPassword = require("crypto").randomBytes(8).toString("hex");
+  const hashedPassword = await hashThePassword(newPassword);
+
+  // create user form data
+  const newAuthUser = new Auth({
+    email: data.email,
+    password: hashedPassword,
+    role: data.role,
+    provider: Headers.EMAIL_KEY,
+    status: "active",
+  });
+
+  // creating user in database
+  try {
+    const savedUser = await newAuthUser.save();
+
+    if (savedUser) {
+      savedUser.firstName = data.name.toString().split(" ")[0];
+      savedUser.lastName = data.name.toString().split(" ")[1];
+
+      const userSaved = await UserControllers.createInstituteUser({
+        email: data.email,
+        firstName: savedUser.firstName,
+        lastName: savedUser.lastName,
+        username: availableUsername,
+        instituteId: data.instituteId,
+        createdBy: data.createdBy,
+        role: data.role,
+        userId: newAuthUser._id,
+      });
+      if (userSaved.success) {
+        return {
+          success: true,
+          message: "Institute user created",
+          data: {
+            user: userSaved.data,
+            password: newPassword,
+          },
+        };
+      } else {
+        return {
+          success: false,
+          message: "Failed to create institute user",
+        };
+      }
+    }
+    // Print the error and sent back failed response
+    // console.log(error);
+    return {
+      success: false,
+      message: Errors.REGISTER_FAILED,
+    };
+  } catch (err) {
+    return {
+      success: false,
+      message: Errors.REGISTER_FAILED,
+    };
+  }
+};
+
+function createUsername(name) {
+  return name.toString().toLowerCase().replace(" ", ".");
+}
+
+async function findAvailableUsername(username) {
+  const max_tries = 15;
+  var tries = 0;
+
+  const adm = await UserControllers.fetchUserIdByUsername(username);
+  if (!adm || !adm._id) {
+    return username;
+  }
+
+  while (tries < max_tries) {
+    tries++;
+    const adm = await UserControllers.fetchUserIdByUsername(username + tries);
+    if (!adm || !adm._id) {
+      return username + tries;
+    }
+  }
+  return require("crypto").randomBytes(6).toString("hex");
+}
+
 /* User login with email   
     - fetch user data
     - [ERROR] if user not found in db, send an error response
@@ -772,6 +868,7 @@ async function loginUser(authUser, provider, res, isSignup) {
     if (savedUser) {
       return res
         .status(200)
+        .header("Access-Control-Expose-Headers", "access_token, refresh_token")
         .header(Headers.ACCESS_TOKEN, accessToken)
         .header(Headers.REFRESH_TOKEN, authUser.refreshToken)
         .json(

@@ -2,23 +2,39 @@ const User = require("../models/user");
 const Errors = require("../utils/constants").errors;
 const Success = require("../utils/constants").successMessages;
 const crypto = require("crypto");
+const mongoose = require("mongoose");
 
-module.exports.createUser = async (userData) => {
+async function createUser(userData) {
   var user = new User({
     userId: userData._id,
     email: userData.email,
-    username:
-      userData.firstName.toString().toLowerCase() +
-      "_" +
-      crypto.randomBytes(3).toString("hex"),
+    username: userData.firstName + "_" + crypto.randomBytes(3).toString("hex"),
     firstName: userData.firstName,
     lastName: userData.lastName,
     photoUrl: userData.photoUrl,
+    role: userData.role,
+    instituteId: userData._id,
+    createdBy: userData._id,
   });
-  await user.save();
-};
+  try {
+    const saved = await user.save();
+    return { success: true, data: saved };
+  } catch (err) {
+    return { success: false, error: err };
+  }
+}
 
-module.exports.getUser = async (req, res) => {
+async function createInstituteUser(userData) {
+  var user = new User(userData);
+  try {
+    const saved = await user.save();
+    return { success: true, data: saved };
+  } catch (err) {
+    return { success: false, error: err };
+  }
+}
+
+async function getUser(req, res) {
   await User.findOne(
     { userId: req.tokenData.authId },
     {
@@ -41,9 +57,9 @@ module.exports.getUser = async (req, res) => {
       });
     }
   );
-};
+}
 
-module.exports.updateUser = async (req, res) => {
+async function updateUser(req, res) {
   var user = await User.findOne(
     { userId: req.tokenData.authId },
     {
@@ -65,9 +81,9 @@ module.exports.updateUser = async (req, res) => {
       user: updated,
     });
   });
-};
+}
 
-module.exports.checkUsernameAvailability = async (req, res) => {
+async function checkUsernameAvailability(req, res) {
   const user = await User.findOne(
     { username: req.params.username },
     { _id: 1 }
@@ -83,11 +99,11 @@ module.exports.checkUsernameAvailability = async (req, res) => {
       message: Success.USERNAME_AVAILABLE,
     });
   }
-};
+}
 
-module.exports.deleteUser = async (authId) => {
+async function deleteUser(authId) {
   await User.deleteOne({ userId: authId });
-};
+}
 
 function _updateUserModel(userData, updated) {
   for (const [key, value] of Object.entries(updated)) {
@@ -112,7 +128,7 @@ function _isAllowed(key) {
   return !_immutableFields.includes(key);
 }
 
-module.exports.fetchNameOfUser = async function (email) {
+async function fetchNameOfUser(email) {
   var name = " ";
   await User.findOne({ email: email }, { firstName: 1, lastName: 1 })
     .then((document) => {
@@ -126,4 +142,27 @@ module.exports.fetchNameOfUser = async function (email) {
       name = " ";
     });
   return name;
+}
+
+async function fetchUserIdByUsername(username) {
+  return User.findOne({ username: username }, { _id: 1 });
+}
+
+async function fetchInstituteIdByUserId(userId) {
+  return User.findOne(
+    { userId: mongoose.Types.ObjectId(userId) },
+    { _id: 1, instituteId: 1 }
+  );
+}
+
+module.exports = {
+  fetchInstituteIdByUserId,
+  fetchUserIdByUsername,
+  fetchNameOfUser,
+  deleteUser,
+  checkUsernameAvailability,
+  createUser,
+  getUser,
+  updateUser,
+  createInstituteUser,
 };
