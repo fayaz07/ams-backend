@@ -99,6 +99,10 @@ async function getInsModeratorByUsername(username) {
   return await InsModerator.findOne({ username: username });
 }
 
+async function getInsModeratorById(id) {
+  return await InsModerator.findById(mongoose.Types.Schema(id.toString()));
+}
+
 async function login(req, res) {
   // check if user exists
   var authUser = await getInsModeratorByUsername(req.body.username);
@@ -170,4 +174,6 @@ async function loginUser(authUser, provider, res) {
 module.exports = {
   createInsModerator,
   login,
+  getInsModeratorByUsername,
+  getInsModeratorById,
 };

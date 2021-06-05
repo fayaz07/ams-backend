@@ -608,6 +608,33 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get institutes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/institute",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"institute"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -693,7 +720,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{access_token}}",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBUElfVVNFUlMiLCJzdWIiOiJBUElfQWNjZXNzVG9rZW4iLCJpc3MiOiJBTVMiLCJhdXRoSWQiOiI2MGJhNzNkMjNlZjAzY2I2NTYxMGM4YjUiLCJpYXQiOjE2MjI4MzIxNTksImV4cCI6MTYyMjkxODU1OX0.NmGrzA2fl1ABJVQ0G4ieIxMk6rfgludOs8y-gE4qDiYss5HOb4RqEBp9whpaCIg1TsLVK4zFakGCU0vMNGohFg",
 									"type": "string"
 								}
 							]
@@ -730,7 +757,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\" : \"vijay.mallayya\",\n    \"password\":\"f13dae070d29bc7f\"\n}",
+							"raw": "{\n    \"username\": \"virat.kohli\",\n    \"password\": \"b64612e0000c71ce\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

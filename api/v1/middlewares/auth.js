@@ -3,6 +3,7 @@ const AuthControllers = require("../controllers/auth");
 const Headers = require("../utils/constants").headers;
 const Errors = require("../utils/constants").errors;
 const AccountContants = require("../utils/constants").account;
+const { getInsModeratorById } = require("../controllers/ins_moderator");
 const { getInsAdminById } = require("../controllers/ins_admin");
 const { getInstituteById } = require("../controllers/institute");
 
@@ -391,7 +392,7 @@ module.exports.checkInsAdminAccess = async (req, res, next) => {
   if (!institute || !institute._id) {
     return res.status(400).json({
       status: Errors.FAILED,
-      message: "Institute not found",
+      message: "Institute not found/deleted",
     });
   }
   // console.log(institute);
@@ -406,6 +407,39 @@ module.exports.checkInsAdminAccess = async (req, res, next) => {
     req.institute = institute;
 
     req.authUser = insAdmin;
+    next();
+  } else {
+    return res.status(401).json({
+      status: Errors.FAILED,
+      message: "You are not allowed to perform this operation",
+    });
+  }
+};
+
+module.exports.checkInsModeratorAccess = async (req, res, next) => {
+  const insModerator = await getInsModeratorById(req.tokenData.authId);
+
+  // console.log(insAdmin);
+
+  const institute = await getInstituteById(req.body.instituteId);
+  if (!institute || !institute._id) {
+    return res.status(400).json({
+      status: Errors.FAILED,
+      message: "Institute not found/deleted",
+    });
+  }
+  // console.log(institute);
+  // console.log(institute._id);
+  // console.log(insAdmin.instituteId);
+  // console.log(institute._id.toString() === insAdmin.instituteId.toString());
+  if (
+    insModerator &&
+    insModerator._id &&
+    institute._id.toString() === insModerator.instituteId.toString()
+  ) {
+    req.institute = institute;
+
+    req.authUser = insModerator;
     next();
   } else {
     return res.status(401).json({

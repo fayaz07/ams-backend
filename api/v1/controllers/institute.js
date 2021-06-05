@@ -65,8 +65,20 @@ async function getInstituteById(instituteId) {
   );
 }
 
+async function getInstitutes(req, res) {
+  const institutes = await Institute.find();
+  return res.status(200).json({
+    status: Success.SUCCESS,
+    message: "Fetched institutes",
+    data: {
+      institutes: institutes,
+    },
+  });
+}
+
 module.exports = {
   addInstitute,
   getInstituteByRegId,
   getInstituteById,
+  getInstitutes,
 };
