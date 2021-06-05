@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
+    subjects: {
+      type: [],
+      default: {},
+    },
     firstName: String,
     lastName: String,
     gender: String,

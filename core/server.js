@@ -15,6 +15,7 @@ const instituteRoute = require("../api/v1/routes/institute");
 const instituteAdminRoute = require("../api/v1/routes/ins_admin");
 const instituteModeratorRoute = require("../api/v1/routes/ins_moderator");
 const subjectRoute = require("../api/v1/routes/subject");
+const instituteTeacherRoute = require("../api/v1/routes/ins_teacher");
 
 // importing admin routes
 const adminAuthRoute = require("../api/v1/routes/admin/auth");
@@ -74,7 +75,9 @@ function _setRoutes(app) {
   app.use("/api/v1/ins/admin", instituteAdminRoute);
   //  institute moderator middleware
   app.use("/api/v1/ins/moderator", instituteModeratorRoute);
-  //  institute moderator middleware
+  //  institute teacher middleware
+  app.use("/api/v1/ins/teacher", instituteTeacherRoute);
+  //  subject middleware
   app.use("/api/v1/subject", subjectRoute);
 
   // admin routes

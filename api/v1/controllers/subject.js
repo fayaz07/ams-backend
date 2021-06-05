@@ -1,6 +1,7 @@
 const Subject = require("../models/subject");
 const { errors } = require("../utils/constants");
 const success = require("../utils/constants").successMessages;
+const mongoose = require("mongoose");
 
 async function createSubject(req, res) {
   var errMsg = null;
@@ -48,7 +49,20 @@ async function getAllSubjectsOfInstitute(req, res) {
   });
 }
 
+async function getSubjectsIdsFromIdsArray(arr, instituteId) {
+  var ids = [];
+  arr.forEach((e) => {
+    //console.log(e);
+    ids.push(mongoose.Types.ObjectId(e.toString()));
+  });
+  return await Subject.find(
+    { _id: ids, instituteId: mongoose.Types.ObjectId(instituteId.toString()) },
+    { _id: 1 }
+  );
+}
+
 module.exports = {
   getAllSubjectsOfInstitute,
   createSubject,
+  getSubjectsIdsFromIdsArray,
 };
