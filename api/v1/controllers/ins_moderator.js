@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const InsAdmin = require("../models/ins_admin");
-const { getInstituteById } = require("./institute");
+const InsModerator = require("../models/ins_moderator");
+// const { getInstituteById } = require("./institute");
 const Errors = require("../utils/constants").errors;
 const Success = require("../utils/constants").successMessages;
 const {
@@ -11,50 +11,54 @@ const {
 const Helpers = require("../../../core/helpers");
 const JWTHandler = require("../../../core/jwt");
 const Headers = require("../utils/constants").headers;
+// const { getInsAdminById } = require("../controllers/ins_admin");
 
-async function createInsAdmin(req, res) {
-  if (!req.body.instituteId) {
+async function createInsModerator(req, res) {
+  var errMsg = null;
+
+  if (!req.body.instituteId) errMsg = "Institute id is required";
+  else if (!req.body.name) errMsg = "Name of moderator is required";
+
+  if (errMsg) {
     return res.status(400).json({
       status: Errors.FAILED,
-      message: "Institute id is required",
+      message: errMsg,
     });
   }
 
-  const institute = await getInstituteById(req.body.instituteId);
-  if (!institute || !institute._id) {
-    return res.status(400).json({
-      status: Errors.FAILED,
-      message: "Institute not found",
-    });
-  }
+  const institute = req.institute;
 
-  const username = createUsername(institute.principal);
+  const insAdmin = req.authUser;
 
+  console.log(insAdmin);
+
+  const username = createUsername(req.body.name);
   const availableUsername = await findAvailableUsername(username);
 
   const newPassword = require("crypto").randomBytes(8).toString("hex");
 
   const hashedPassword = await hashThePassword(newPassword);
 
-  const newInsAdmin = new InsAdmin({
+  const newInsModerator = new InsModerator({
     username: availableUsername,
     name: institute.principal,
     instituteId: institute._id,
     password: hashedPassword,
+    createdBy: mongoose.Types.ObjectId(req.tokenData.authId.toString()),
   });
 
   try {
-    const saved = await newInsAdmin.save();
+    const saved = await newInsModerator.save();
     if (!saved) {
       return res.status(400).json({
         status: Errors.FAILED,
-        message: "Failed to create institute admin",
+        message: "Failed to create institute moderator",
       });
     }
     saved.password = newPassword;
     return res.status(201).json({
       status: Success.SUCCESS,
-      message: "Created institute admin",
+      message: "Created institute moderator",
       data: {
         instituteAdmin: saved,
       },
@@ -62,7 +66,7 @@ async function createInsAdmin(req, res) {
   } catch (err) {
     return res.status(403).json({
       status: Errors.FAILED,
-      message: "Failed to create institute admin",
+      message: "Failed to create institute moderator",
       error: err,
     });
   }
@@ -72,14 +76,14 @@ async function findAvailableUsername(username) {
   const max_tries = 15;
   var tries = 0;
 
-  const adm = await getInsAdminByUsername(username);
+  const adm = await getInsModeratorByUsername(username);
   if (!adm || !adm._id) {
     return username;
   }
 
   while (tries < max_tries) {
     tries++;
-    const adm = await getInsAdminByUsername(username + tries);
+    const adm = await getInsModeratorByUsername(username + tries);
     if (!adm || !adm._id) {
       return username + tries;
     }
@@ -91,13 +95,13 @@ function createUsername(name) {
   return name.toString().toLowerCase().replace(" ", ".");
 }
 
-async function getInsAdminByUsername(username) {
-  return await InsAdmin.findOne({ username: username });
+async function getInsModeratorByUsername(username) {
+  return await InsModerator.findOne({ username: username });
 }
 
 async function login(req, res) {
   // check if user exists
-  var authUser = await getInsAdminByUsername(req.body.username);
+  var authUser = await getInsModeratorByUsername(req.body.username);
 
   //console.log(authUser);
 
@@ -163,12 +167,7 @@ async function loginUser(authUser, provider, res) {
   });
 }
 
-async function getInsAdminById(id) {
-  return await InsAdmin.findById(mongoose.Types.ObjectId(id.toString()));
-}
-
 module.exports = {
-  createInsAdmin,
+  createInsModerator,
   login,
-  getInsAdminById,
 };

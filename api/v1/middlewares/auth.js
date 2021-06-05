@@ -3,6 +3,8 @@ const AuthControllers = require("../controllers/auth");
 const Headers = require("../utils/constants").headers;
 const Errors = require("../utils/constants").errors;
 const AccountContants = require("../utils/constants").account;
+const { getInsAdminById } = require("../controllers/ins_admin");
+const { getInstituteById } = require("../controllers/institute");
 
 /* register fields validation middleware
     (using register fields validation to login and
@@ -375,6 +377,34 @@ module.exports.checkAdminAccess = async (req, res, next) => {
     }
   }
   */
+};
+
+/*
+  Check if user's access has been revoked by the admin/account is verified
+*/
+module.exports.checkInsAdminAccess = async (req, res, next) => {
+  const insAdmin = await getInsAdminById(req.tokenData.authId);
+
+  console.log(insAdmin);
+
+  const institute = await getInstituteById(req.body.instituteId);
+  if (!institute || !institute._id) {
+    return res.status(400).json({
+      status: Errors.FAILED,
+      message: "Institute not found",
+    });
+  }
+  console.log(institute);
+  if (!insAdmin || !insAdmin._id || !insAdmin.instituteId != institute._id) {
+    return res.status(401).json({
+      status: Errors.FAILED,
+      message: "You are not allowed to perform this operation",
+    });
+  }
+  req.institute = institute;
+
+  req.authUser = insAdmin;
+  next();
 };
 
 /*
