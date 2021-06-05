@@ -385,7 +385,7 @@ module.exports.checkAdminAccess = async (req, res, next) => {
 module.exports.checkInsAdminAccess = async (req, res, next) => {
   const insAdmin = await getInsAdminById(req.tokenData.authId);
 
-  console.log(insAdmin);
+  // console.log(insAdmin);
 
   const institute = await getInstituteById(req.body.instituteId);
   if (!institute || !institute._id) {
@@ -394,17 +394,25 @@ module.exports.checkInsAdminAccess = async (req, res, next) => {
       message: "Institute not found",
     });
   }
-  console.log(institute);
-  if (!insAdmin || !insAdmin._id || !insAdmin.instituteId != institute._id) {
+  // console.log(institute);
+  // console.log(institute._id);
+  // console.log(insAdmin.instituteId);
+  // console.log(institute._id.toString() === insAdmin.instituteId.toString());
+  if (
+    insAdmin &&
+    insAdmin._id &&
+    institute._id.toString() === insAdmin.instituteId.toString()
+  ) {
+    req.institute = institute;
+
+    req.authUser = insAdmin;
+    next();
+  } else {
     return res.status(401).json({
       status: Errors.FAILED,
       message: "You are not allowed to perform this operation",
     });
   }
-  req.institute = institute;
-
-  req.authUser = insAdmin;
-  next();
 };
 
 /*

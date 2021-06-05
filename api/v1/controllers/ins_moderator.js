@@ -28,9 +28,9 @@ async function createInsModerator(req, res) {
 
   const institute = req.institute;
 
-  const insAdmin = req.authUser;
+  //  const insAdmin = req.authUser;
 
-  console.log(insAdmin);
+  //  console.log(insAdmin);
 
   const username = createUsername(req.body.name);
   const availableUsername = await findAvailableUsername(username);
@@ -41,7 +41,7 @@ async function createInsModerator(req, res) {
 
   const newInsModerator = new InsModerator({
     username: availableUsername,
-    name: institute.principal,
+    name: req.body.name,
     instituteId: institute._id,
     password: hashedPassword,
     createdBy: mongoose.Types.ObjectId(req.tokenData.authId.toString()),
@@ -60,7 +60,7 @@ async function createInsModerator(req, res) {
       status: Success.SUCCESS,
       message: "Created institute moderator",
       data: {
-        instituteAdmin: saved,
+        instituteModerator: saved,
       },
     });
   } catch (err) {
