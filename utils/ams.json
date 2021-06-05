@@ -69,7 +69,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"vijay.mallayya\",\n    \"password\": \"9oBJ_BTGi\"\n}",
+							"raw": "{\n    \"username\": \"yuzi.chahal\",\n    \"password\": \"8_Tfaw$0z\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -757,7 +757,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"instituteId\": \"60ba656a8e00acaa09803756\",\n    \"name\": \"Virat Kohli\"\n}",
+							"raw": "{\n    \"name\": \"Virat Kohli\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -772,6 +772,49 @@
 							"path": [
 								"ins",
 								"moderator",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "institute teacher",
+			"item": [
+				{
+					"name": "create institute teacher",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Yuzi Chahal\",\n    \"subjects\": [\"60bbb4bb7dda58c2966b8e1a\", \"60bbb4c87dda58c2966b8e1b\", \"60bbb4c87dda58c2966b8e1c\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ins/teacher/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ins",
+								"teacher",
 								"register"
 							]
 						}
