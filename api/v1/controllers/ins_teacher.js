@@ -3,7 +3,6 @@ const Success = require("../utils/constants").successMessages;
 const { registerInstituteUser } = require("./auth");
 const AccountRoles = require("../utils/constants").account;
 const { getSubjectsIdsFromIdsArray } = require("./subject");
-const mongoose = require("mongoose");
 
 async function createInsTeacher(req, res) {
   var errMsg = null;
@@ -12,6 +11,8 @@ async function createInsTeacher(req, res) {
   else if (!req.body.subjects) errMsg = "Subjects are required";
   else if (!Array.isArray(req.body.subjects))
     errMsg = "Subjects must be an array";
+  else if (req.body.subjects.length < 1)
+    errMsg = "Atleast one subject is required";
 
   if (errMsg) {
     return res.status(400).json({
@@ -34,6 +35,13 @@ async function createInsTeacher(req, res) {
   });
 
   //  console.log(subIds);
+
+  if (subIds.length < 1) {
+    return res.status(400).json({
+      status: Errors.FAILED,
+      message: "Sujects must be valid",
+    });
+  }
 
   const moderatorCreated = await registerInstituteUser({
     name: req.body.name,
