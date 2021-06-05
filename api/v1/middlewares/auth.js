@@ -268,7 +268,10 @@ module.exports.checkUserAccess = async (req, res, next) => {
   );
   if (!authUser) return sendError(Errors.INVALID_TOKEN, "", res);
 
-  if (authUser.status != AccountContants.accountStatus.active) {
+  if (
+    authUser.status != AccountContants.accountStatus.active ||
+    authUser.status != AccountContants.accountStatus.adminApproved
+  ) {
     return res.status(401).json({
       status: Errors.FAILED,
       message: `Your account status is ${authUser.status}`,

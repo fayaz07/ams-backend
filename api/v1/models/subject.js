@@ -1,46 +1,24 @@
 const mongoose = require("mongoose");
-const {
-  INSTITUTE_TEACHER_COLLECTION,
-} = require("../utils/constants").collections;
+const { SUBJECT_COLLECTION } = require("../utils/constants").collections;
 
-const teacherSchema = new mongoose.Schema(
+const subjectSchema = new mongoose.Schema(
   {
-    regId: {
-      type: String,
+    instituteId: {
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
-      unique: true,
     },
-    email: {
-      type: String,
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
     },
     name: {
       type: String,
       required: true,
     },
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    photoUrl: String,
-
-    // address
-    address: String,
-    district: String,
-    state: String,
-    country: String,
-    latitude: Number,
-    longitude: Number,
-
-    contactNo: String,
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model(INSTITUTE_TEACHER_COLLECTION, teacherSchema);
+module.exports = mongoose.model(SUBJECT_COLLECTION, subjectSchema);
