@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { internalServerError } = require("../utils/response");
 const AuthMiddlewares = require("../middlewares/auth");
-const SubjectControllers = require("../controllers/subject");
+const ClassControllers = require("../controllers/class");
 
 router.post(
   "/",
@@ -10,7 +10,7 @@ router.post(
   AuthMiddlewares.checkInsAdminAccess,
   async (req, res) => {
     try {
-      await SubjectControllers.createSubject(req, res);
+      await ClassControllers.createClass(req, res);
     } catch (error) {
       internalServerError(res, error);
     }
@@ -24,7 +24,7 @@ router.get(
   AuthMiddlewares.checkInsAdminAccess,
   async (req, res) => {
     try {
-      await SubjectControllers.getAllSubjectsOfInstitute(req, res);
+      await ClassControllers.getAllClassesOfInstitute(req, res);
     } catch (error) {
       internalServerError(res, error);
     }

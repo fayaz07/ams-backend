@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema(
     },
     subjects: {
       type: [],
-      default: {},
+      default: [],
     },
     firstName: String,
     lastName: String,

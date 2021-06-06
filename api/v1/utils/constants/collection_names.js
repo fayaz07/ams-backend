@@ -8,4 +8,6 @@ module.exports = Object({
   // INSTITUTE_TEACHER_COLLECTION: "institute_teacher",
   INSTITUTE_STUDENT_COLLECTION: "institute_student",
   SUBJECT_COLLECTION: "subject",
+  CLASS_COLLECTION: "class",
+  STUDENT_COLLECTION: "student",
 });

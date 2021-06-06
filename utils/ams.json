@@ -824,6 +824,95 @@
 			]
 		},
 		{
+			"name": "class",
+			"item": [
+				{
+					"name": "get all classes of institute",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/class/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"class",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create class",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"IB\",\n    \"subjects\": [\"60bbb4bb7dda58c2966b8e1a\", \"60bbb4c87dda58c2966b8e1b\", \"60bbb4c87dda58c2966b8e1c\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/class",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"class"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
 			"name": "subjects",
 			"item": [
 				{
@@ -878,12 +967,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/subject",
+							"raw": "{{baseUrl}}/subject/all",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"subject"
+								"subject",
+								"all"
 							]
 						}
 					},
