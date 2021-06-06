@@ -1177,6 +1177,47 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "student",
+			"item": [
+				{
+					"name": "create student",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"de Villiers\",\n    \"classId\": \"60bc9602d6557e4efdf22b10\",\n    \"rollNumber\": \"A123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/student",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"student"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -1202,7 +1243,7 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "localhost:6000/api/v1"
+			"value": "localhost:7500/api/v1"
 		},
 		{
 			"key": "access_token",

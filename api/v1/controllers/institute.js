@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const Institute = require("../models/institute");
 const Errors = require("../utils/constants").errors;
 const Success = require("../utils/constants").successMessages;
+const AccountRoles = require("../utils/constants").account;
+const UserControllers = require("./user");
+const StudentControllers = require("./student");
 
 async function addInstitute(req, res) {
   const data = req.body;
@@ -80,11 +83,20 @@ async function getCurrentInstitute(req, res) {
   const institute = await Institute.findOne({
     _id: mongoose.Types.ObjectId(req.authUser.instituteId.toString()),
   });
+  const teachersCount = await UserControllers.getCountOfUsersByInstituteAndRole(
+    institute._id,
+    AccountRoles.accRoles.teacher
+  );
+  const studentsCount = await StudentControllers.getStudentsCountByInstituteId(
+    institute._id
+  );
   return res.status(200).json({
     status: Success.SUCCESS,
     message: "Fetched your institute",
     data: {
       institute: institute,
+      noOfTeachers: teachersCount,
+      noOfStudents: studentsCount,
     },
   });
 }

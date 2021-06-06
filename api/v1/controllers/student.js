@@ -57,6 +57,11 @@ async function createStudent(req, res) {
   }
 }
 
+async function getStudentsCountByInstituteId(instituteId) {
+  return Student.find({ instituteId: instituteId }).countDocuments();
+}
+
 module.exports = {
   createStudent,
+  getStudentsCountByInstituteId,
 };

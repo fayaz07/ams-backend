@@ -174,6 +174,16 @@ async function fetchUsersByInstituteAndRole(instituteId, role) {
   );
 }
 
+async function getCountOfUsersByInstituteAndRole(instituteId, role) {
+  return User.find(
+    {
+      instituteId: mongoose.Types.ObjectId(instituteId.toString()),
+      role: role,
+    },
+    { _id: 0 }
+  ).countDocuments();
+}
+
 module.exports = {
   fetchUsersByInstituteAndRole,
   fetchUsersByInstitute,
@@ -186,4 +196,5 @@ module.exports = {
   getUser,
   updateUser,
   createInstituteUser,
+  getCountOfUsersByInstituteAndRole,
 };
