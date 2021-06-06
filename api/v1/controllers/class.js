@@ -290,11 +290,27 @@ async function addStudentToClass(classId, studentId) {
   return updated;
 }
 
+async function addAttendanceSlot(classId, date) {
+  return await Class.updateOne(
+    { _id: classId },
+    { $addToSet: { attendance: date } }
+  );
+}
+
+async function getClassByIdAndProjection(id, projection) {
+  return await Class.findById(
+    mongoose.Types.ObjectId(id.toString()),
+    projection
+  );
+}
+
 module.exports = {
   createClass,
+  getClassByIdAndProjection,
   addStudentToClass,
   assignSubjectTeacher,
   getAllClassesOfInstitute,
   assignClassTeacher,
   getClassById,
+  addAttendanceSlot,
 };

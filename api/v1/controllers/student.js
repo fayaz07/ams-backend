@@ -1,7 +1,6 @@
 const Student = require("../models/student");
 const { errors } = require("../utils/constants");
 const success = require("../utils/constants").successMessages;
-const mongoose = require("mongoose");
 const ClassControllers = require("./class");
 
 async function createStudent(req, res) {
@@ -61,7 +60,15 @@ async function getStudentsCountByInstituteId(instituteId) {
   return Student.find({ instituteId: instituteId }).countDocuments();
 }
 
+async function createAttendanceSlots(students, attendanceSlot) {
+  return Student.updateMany(
+    { _id: students },
+    { $addToSet: { attendance: attendanceSlot } }
+  );
+}
+
 module.exports = {
   createStudent,
   getStudentsCountByInstituteId,
+  createAttendanceSlots,
 };

@@ -37,6 +37,10 @@ const classSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    attendance: {
+      type: [Date],
+      default: [],
+    },
   },
   {
     timestamps: true,
