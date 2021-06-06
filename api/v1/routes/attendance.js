@@ -17,6 +17,20 @@ router.post(
   }
 );
 
+router.post(
+  "/multiple",
+  AuthMiddlewares.checkAccessToken,
+  AuthMiddlewares.validateAccessToken,
+  AuthMiddlewares.checkInsTeacherAccess,
+  async (req, res) => {
+    try {
+      await AttendanceControllers.postAttendanceForMultipleStudents(req, res);
+    } catch (error) {
+      internalServerError(res, error);
+    }
+  }
+);
+
 router.get(
   "/",
   AuthMiddlewares.checkAccessToken,

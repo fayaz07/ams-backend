@@ -297,11 +297,23 @@ async function addAttendanceSlot(classId, date) {
   );
 }
 
+async function checkIfSlotIsCreated(classId, sDate) {
+  // console.log(sDate);
+  return await Class.find({
+    _id: classId,
+    attendance: { $elemMatch: { date: sDate } },
+  }).countDocuments();
+}
+
 async function getClassByIdAndProjection(id, projection) {
   return await Class.findById(
     mongoose.Types.ObjectId(id.toString()),
     projection
   );
+}
+
+async function getClassCountByConditionAndProjection(condition, projection) {
+  return await Class.find(condition, projection).countDocuments();
 }
 
 module.exports = {
@@ -313,4 +325,6 @@ module.exports = {
   assignClassTeacher,
   getClassById,
   addAttendanceSlot,
+  getClassCountByConditionAndProjection,
+  checkIfSlotIsCreated,
 };

@@ -67,8 +67,34 @@ async function createAttendanceSlots(students, attendanceSlot) {
   );
 }
 
+async function postAttendanceForASubject(students) {
+  // console.log(students);
+  // await Student.find(
+  //   { _id: { $in: students } },
+  //   { attendance: 1, rollNumber: 1 }
+  // )
+  //   .cursor()
+  //   .eachAsync(function (doc) {
+  //     //      doc.foo = "bar";
+  //     console.log(doc);
+  //     doc.rollNumber = "A1";
+  //     return doc;
+  //   });
+  // on("data", function (doc) {
+  //   console.log(doc.foo);
+  // });
+  const cursor = Student.find(
+    { _id: { $in: students } },
+    { attendance: 1 }
+  ).cursor();
+  cursor.eachAsync(async (doc) => {
+    await doc.save();
+  });
+}
+
 module.exports = {
   createStudent,
   getStudentsCountByInstituteId,
   createAttendanceSlots,
+  postAttendanceForASubject,
 };

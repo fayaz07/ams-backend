@@ -1218,6 +1218,86 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "attendance",
+			"item": [
+				{
+					"name": "create attendance slot",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"2021-06-06\",\n    \"classId\": \"60bc9602d6557e4efdf22b10\",\n    \"subjects\": {\n        \"60bc95e3d6557e4efdf22b0e\": 2\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/attendance/slot/add",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"attendance",
+								"slot",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post attendance for multiple students",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"2021-06-06\",\n    \"classId\": \"60bc9602d6557e4efdf22b10\",\n    \"attendance\": {\n        \"60bcb42809db206581791442\": 2\n    },\n    \"subjectId\": \"60bc95e3d6557e4efdf22b0e\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/attendance/multiple",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"attendance",
+								"multiple"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
