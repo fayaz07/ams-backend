@@ -23,6 +23,27 @@ const studentSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    classId: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
+    attendance: {
+      type: [
+        {
+          date: {
+            type: Date,
+            unique: true,
+          },
+          classId: { type: mongoose.Schema.Types.ObjectId, unique: true },
+          attendance: [
+            {
+              subId: { type: mongoose.Schema.Types.ObjectId, unique: true },
+              hours: Number,
+            },
+          ],
+        },
+      ],
+      default: [],
+    },
   },
   {
     timestamps: true,

@@ -151,7 +151,7 @@ async function fetchUserIdByUsername(username) {
 async function fetchInstituteIdByUserId(userId) {
   return User.findOne(
     { userId: mongoose.Types.ObjectId(userId) },
-    { _id: 1, instituteId: 1 }
+    { _id: 1, instituteId: 1, userId: 1 }
   );
 }
 

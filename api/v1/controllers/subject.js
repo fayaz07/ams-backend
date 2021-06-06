@@ -16,7 +16,7 @@ async function createSubject(req, res) {
   const subject = new Subject({
     name: req.body.name,
     instituteId: req.authUser.instituteId,
-    createdBy: req.authUser._id,
+    createdBy: req.authUser.userId,
   });
 
   try {

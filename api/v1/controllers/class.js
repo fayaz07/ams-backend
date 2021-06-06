@@ -48,7 +48,7 @@ async function createClass(req, res) {
   const subject = new Class({
     name: req.body.name,
     instituteId: req.authUser.instituteId,
-    createdBy: req.authUser._id,
+    createdBy: req.authUser.userId,
     subjects: subIds,
   });
 
@@ -70,9 +70,12 @@ async function createClass(req, res) {
 }
 
 async function getAllClassesOfInstitute(req, res) {
-  const classes = await Class.find({
-    instituteId: req.authUser.instituteId,
-  });
+  const classes = await Class.find(
+    {
+      instituteId: req.authUser.instituteId,
+    },
+    { "subjects._id": 0 }
+  );
   return res.status(200).json({
     status: success.SUCCESS,
     message: "Fetched all classes of your institute",
@@ -279,9 +282,19 @@ async function assignSubjectTeacher(req, res) {
   }
 }
 
+async function addStudentToClass(classId, studentId) {
+  const updated = await Class.updateOne(
+    { _id: classId },
+    { $addToSet: { students: studentId } }
+  );
+  return updated;
+}
+
 module.exports = {
   createClass,
+  addStudentToClass,
   assignSubjectTeacher,
   getAllClassesOfInstitute,
   assignClassTeacher,
+  getClassById,
 };

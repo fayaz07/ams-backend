@@ -17,6 +17,7 @@ const instituteModeratorRoute = require("../api/v1/routes/ins_moderator");
 const subjectRoute = require("../api/v1/routes/subject");
 const instituteTeacherRoute = require("../api/v1/routes/ins_teacher");
 const classRoute = require("../api/v1/routes/class");
+const studentRoute = require("../api/v1/routes/student");
 
 // importing admin routes
 const adminAuthRoute = require("../api/v1/routes/admin/auth");
@@ -82,6 +83,8 @@ function _setRoutes(app) {
   app.use("/api/v1/subject", subjectRoute);
   //  class middleware
   app.use("/api/v1/class", classRoute);
+  //  student middleware
+  app.use("/api/v1/student", studentRoute);
 
   // admin routes
   // auth middleware
