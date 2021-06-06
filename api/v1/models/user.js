@@ -23,6 +23,9 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    regId: {
+      type: String,
+    },
     email: {
       type: String,
       unique: true,
@@ -48,6 +51,7 @@ const userSchema = new mongoose.Schema(
     latitude: Number,
     longitude: Number,
     photoUrl: String,
+    phone: String,
   },
   {
     timestamps: true,

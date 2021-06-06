@@ -69,7 +69,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"yuzi.chahal\",\n    \"password\": \"8_Tfaw$0z\"\n}",
+							"raw": "{\n    \"username\": \"vijay.mallayya1\",\n    \"password\": \"gCH3SsOY$\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -734,6 +734,47 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get institute admins",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"instituteId\": \"60ba656a8e00acaa09803756\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ins/admin/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ins",
+								"admin",
+								"all"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -777,6 +818,47 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get institute moderators",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Virat Kohli\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ins/moderator/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ins",
+								"moderator",
+								"all"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -800,7 +882,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Yuzi Chahal\",\n    \"subjects\": [\"60bbb4bb7dda58c2966b8e1a\", \"60bbb4c87dda58c2966b8e1b\", \"60bbb4c87dda58c2966b8e1c\"]\n}",
+							"raw": "{\n    \"name\": \"Yuzi Chahal\",\n    \"subjects\": [\"60bbb4bb7dda58c2966b8e1a\", \"60bbb4c87dda58c2966b8e1b\", \"60bbb4c87dda58c2966b8e1c\"],\n    \"phone\": \"9502039079\",\n    \"regId\": \"RE81\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -816,6 +898,47 @@
 								"ins",
 								"teacher",
 								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get institute teachers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Yuzi Chahal\",\n    \"subjects\": [\"60bbb4bb7dda58c2966b8e1a\", \"60bbb4c87dda58c2966b8e1b\", \"60bbb4c87dda58c2966b8e1c\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ins/teacher/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ins",
+								"teacher",
+								"all"
 							]
 						}
 					},
@@ -871,7 +994,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"IB\",\n    \"subjects\": [\"60bbb4bb7dda58c2966b8e1a\", \"60bbb4c87dda58c2966b8e1b\", \"60bbb4c87dda58c2966b8e1c\"]\n}",
+							"raw": "{\n    \"name\": \"IB\",\n    \"subjects\": [\"60bc95e3d6557e4efdf22b0e\", \"60bc95f7d6557e4efdf22b0f\"]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -885,6 +1008,80 @@
 							],
 							"path": [
 								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "assign class teacher",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"teacherId\": \"60bc8562bfc62d441cd52a2a\",\n    \"classId\": \"60bc9602d6557e4efdf22b10\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/class/class-teacher",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"class",
+								"class-teacher"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "assign subject teacher",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"teacherId\": \"60bc8562bfc62d441cd52a2a\",\n    \"classId\": \"60bc9602d6557e4efdf22b10\",\n    \"subjectId\": \"60bc95f7d6557e4efdf22b0f\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/class/subject-teacher",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"class",
+								"subject-teacher"
 							]
 						}
 					},
@@ -932,7 +1129,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Social\"\n}",
+							"raw": "{\n    \"name\": \"Maths\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

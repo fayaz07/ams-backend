@@ -2,6 +2,8 @@ const Class = require("../models/class");
 const { errors } = require("../utils/constants");
 const success = require("../utils/constants").successMessages;
 const { getSubjectsIdsFromIdsArray } = require("./subject");
+const UserControllers = require("./user");
+const mongoose = require("mongoose");
 
 async function createClass(req, res) {
   var errMsg = null;
@@ -28,7 +30,10 @@ async function createClass(req, res) {
   var subIds = [];
 
   subjects.forEach((e) => {
-    subIds.push(e._id);
+    subIds.push({
+      subjectId: e._id,
+      teacherId: null,
+    });
   });
 
   //  console.log(subIds);
@@ -77,7 +82,206 @@ async function getAllClassesOfInstitute(req, res) {
   });
 }
 
+async function assignClassTeacher(req, res) {
+  const teacher = await UserControllers.fetchInstituteIdByUserId(
+    req.body.teacherId
+  );
+  if (!teacher || !teacher._id) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "Teacher profile not found",
+    });
+  }
+
+  if (teacher.instituteId.toString() != req.authUser.instituteId.toString()) {
+    return res.status(401).json({
+      status: errors.FAILED,
+      message: "Teacher can't be made class teacher",
+    });
+  }
+
+  if (!req.body.classId) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "Class Id is required",
+    });
+  }
+
+  const classInstance = await getClassById(req.body.classId);
+  if (!classInstance || !classInstance._id) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "Class not found",
+    });
+  }
+
+  if (
+    classInstance.instituteId.toString() != req.authUser.instituteId.toString()
+  ) {
+    return res.status(401).json({
+      status: errors.FAILED,
+      message: "Can't perform this operation",
+    });
+  }
+
+  try {
+    if (
+      classInstance.classTeacher &&
+      classInstance.classTeacher.toString().length > 5
+    ) {
+      return res.status(400).json({
+        status: errors.FAILED,
+        message: "Class teacher already assigned",
+      });
+    }
+
+    classInstance.classTeacher = teacher._id;
+    const updated = await classInstance.save();
+    if (updated) {
+      return res.status(200).json({
+        status: success.SUCCESS,
+        message: "Class teacher set",
+      });
+    } else {
+      return res.status(403).json({
+        status: errors.FAILED,
+        message: "Unable to set class teacher, please try later",
+      });
+    }
+  } catch (err) {
+    return res.status(403).json({
+      status: errors.FAILED,
+      message: "Unable to set class teacher, please try later",
+      error: err,
+    });
+  }
+}
+
+async function getClassById(id) {
+  return await Class.findById(mongoose.Types.ObjectId(id.toString()));
+}
+
+async function assignSubjectTeacher(req, res) {
+  // fetch teacher
+  const teacher = await UserControllers.fetchInstituteIdByUserId(
+    req.body.teacherId
+  );
+  if (!teacher || !teacher._id) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "Teacher profile not found",
+    });
+  }
+
+  if (teacher.instituteId.toString() != req.authUser.instituteId.toString()) {
+    return res.status(401).json({
+      status: errors.FAILED,
+      message: "Teacher can't be made class teacher",
+    });
+  }
+
+  if (!req.body.classId) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "Class Id is required",
+    });
+  }
+
+  if (!req.body.subjectId) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "Subject Id is required",
+    });
+  }
+
+  const classInstance = await getClassById(req.body.classId);
+  if (!classInstance || !classInstance._id) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "Class not found",
+    });
+  }
+
+  if (
+    classInstance.instituteId.toString() != req.authUser.instituteId.toString()
+  ) {
+    return res.status(401).json({
+      status: errors.FAILED,
+      message: "Can't perform this operation",
+    });
+  }
+
+  try {
+    var subIndex = -1;
+
+    // check if already assigned to any other subject
+    // if subjectId matches, then store the index
+    for (var i = 0; i < classInstance.subjects.length; i++) {
+      const currSubject = classInstance.subjects[i];
+      const subA = new String(currSubject.subjectId).trim();
+      const subB = new String(req.body.subjectId).trim();
+
+      const teacherA = new String(currSubject.teacherId).trim();
+      const teacherB = new String(teacher._id).trim();
+
+      // console.log("\n" + teacherA + "\n" + teacherB);
+      // console.log(teacherA == teacherB);
+
+      // teacher already assigned to some subject
+      if (currSubject.teacherId && teacherA == teacherB) {
+        return res.status(400).json({
+          status: errors.FAILED,
+          message:
+            currSubject.subjectId.toString() === req.body.subjectId.toString()
+              ? "Teacher already assigned to the specific subject"
+              : "Teacher already assigned to other subject",
+        });
+      }
+
+      // console.log(a == b);
+
+      if (subA == subB) {
+        subIndex = i;
+      }
+    }
+
+    if (subIndex == -1) {
+      return res.status(400).json({
+        status: errors.FAILED,
+        message: "Specified subject not assigned to this class",
+      });
+    }
+    // console.log(subIndex);
+    const subTeacher = classInstance.subjects[subIndex];
+    subTeacher.teacherId = teacher._id;
+
+    classInstance.subjects[i] = subTeacher;
+
+    const updated = await classInstance.save();
+    if (updated) {
+      return res.status(200).json({
+        status: success.SUCCESS,
+        message: "Subject teacher assigned",
+      });
+    } else {
+      return res.status(403).json({
+        status: errors.FAILED,
+        message: "Unable to assign Subject teacher, please try later",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({
+      status: errors.FAILED,
+      message: "Unable to assign Subject teacher, please try later",
+      error: err,
+    });
+  }
+}
+
 module.exports = {
   createClass,
+  assignSubjectTeacher,
   getAllClassesOfInstitute,
+  assignClassTeacher,
 };

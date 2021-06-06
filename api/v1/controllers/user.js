@@ -145,7 +145,7 @@ async function fetchNameOfUser(email) {
 }
 
 async function fetchUserIdByUsername(username) {
-  return User.findOne({ username: username }, { _id: 1 });
+  return User.findOne({ username: username }, { _id: 1, userId: 1 });
 }
 
 async function fetchInstituteIdByUserId(userId) {
@@ -155,7 +155,28 @@ async function fetchInstituteIdByUserId(userId) {
   );
 }
 
+async function fetchUsersByInstitute(instituteId) {
+  return User.find(
+    {
+      instituteId: mongoose.Types.ObjectId(instituteId.toString()),
+    },
+    { _id: 0 }
+  );
+}
+
+async function fetchUsersByInstituteAndRole(instituteId, role) {
+  return User.find(
+    {
+      instituteId: mongoose.Types.ObjectId(instituteId.toString()),
+      role: role,
+    },
+    { _id: 0 }
+  );
+}
+
 module.exports = {
+  fetchUsersByInstituteAndRole,
+  fetchUsersByInstitute,
   fetchInstituteIdByUserId,
   fetchUserIdByUsername,
   fetchNameOfUser,

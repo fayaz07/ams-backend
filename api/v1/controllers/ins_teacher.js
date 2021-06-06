@@ -3,11 +3,14 @@ const Success = require("../utils/constants").successMessages;
 const { registerInstituteUser } = require("./auth");
 const AccountRoles = require("../utils/constants").account;
 const { getSubjectsIdsFromIdsArray } = require("./subject");
+const UserControllers = require("./user");
 
 async function createInsTeacher(req, res) {
   var errMsg = null;
 
   if (!req.body.name) errMsg = "Name of moderator is required";
+  else if (!req.body.phone) errMsg = "Phone number is required";
+  else if (!req.body.regId) errMsg = "Registration Id is required";
   else if (!req.body.subjects) errMsg = "Subjects are required";
   else if (!Array.isArray(req.body.subjects))
     errMsg = "Subjects must be an array";
@@ -49,6 +52,8 @@ async function createInsTeacher(req, res) {
     createdBy: req.tokenData.authId,
     role: AccountRoles.accRoles.teacher,
     subjects: subIds,
+    regId: req.body.regId,
+    phone: req.body.phone,
   });
 
   if (moderatorCreated.success) {
@@ -65,6 +70,21 @@ async function createInsTeacher(req, res) {
   }
 }
 
+async function getTeachersOfInstitute(req, res) {
+  const teachers = await UserControllers.fetchUsersByInstituteAndRole(
+    req.authUser.instituteId,
+    AccountRoles.accRoles.teacher
+  );
+  return res.status(200).json({
+    status: Success.SUCCESS,
+    message: "Fetched teachers",
+    data: {
+      teachers: teachers,
+    },
+  });
+}
+
 module.exports = {
   createInsTeacher,
+  getTeachersOfInstitute,
 };

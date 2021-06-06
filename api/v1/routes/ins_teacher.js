@@ -17,4 +17,18 @@ router.post(
   }
 );
 
+router.get(
+  "/all",
+  AuthMiddlewares.checkAccessToken,
+  AuthMiddlewares.validateAccessToken,
+  AuthMiddlewares.checkInsTeacherAccess,
+  async (req, res) => {
+    try {
+      await InsTeacherControllers.getTeachersOfInstitute(req, res);
+    } catch (error) {
+      internalServerError(res, error);
+    }
+  }
+);
+
 module.exports = router;

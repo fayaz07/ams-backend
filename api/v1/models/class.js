@@ -25,11 +25,11 @@ const classSchema = new mongoose.Schema(
     subjects: {
       type: [
         {
-          sub_id: {
+          subjectId: {
             type: mongoose.Schema.Types.ObjectId,
             unique: true,
           },
-          teacher_id: {
+          teacherId: {
             type: mongoose.Schema.Types.ObjectId,
             unique: true,
           },

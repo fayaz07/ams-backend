@@ -170,6 +170,8 @@ module.exports.registerInstituteUser = async (data) => {
         role: data.role,
         userId: newAuthUser._id,
         subjects: data.subjects,
+        regId: data.regId,
+        phone: data.phone,
       });
       if (userSaved.success) {
         return {

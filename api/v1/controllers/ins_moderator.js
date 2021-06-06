@@ -2,6 +2,7 @@ const Errors = require("../utils/constants").errors;
 const Success = require("../utils/constants").successMessages;
 const { registerInstituteUser } = require("./auth");
 const AccountRoles = require("../utils/constants").account;
+const UserControllers = require("./user");
 
 async function createInsModerator(req, res) {
   var errMsg = null;
@@ -37,6 +38,21 @@ async function createInsModerator(req, res) {
   }
 }
 
+async function getModeratorsOfInstitute(req, res) {
+  const moderators = await UserControllers.fetchUsersByInstituteAndRole(
+    req.authUser.instituteId,
+    AccountRoles.accRoles.instituteModerator
+  );
+  return res.status(200).json({
+    status: Success.SUCCESS,
+    message: "Fetched institute moderators",
+    data: {
+      moderators: moderators,
+    },
+  });
+}
+
 module.exports = {
   createInsModerator,
+  getModeratorsOfInstitute,
 };

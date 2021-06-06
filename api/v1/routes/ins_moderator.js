@@ -17,4 +17,18 @@ router.post(
   }
 );
 
+router.get(
+  "/all",
+  AuthMiddlewares.checkAccessToken,
+  AuthMiddlewares.validateAccessToken,
+  AuthMiddlewares.checkInsModeratorAccess,
+  async (req, res) => {
+    try {
+      await InsModeratorControllers.getModeratorsOfInstitute(req, res);
+    } catch (error) {
+      internalServerError(res, error);
+    }
+  }
+);
+
 module.exports = router;

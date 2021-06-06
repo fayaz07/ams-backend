@@ -3,6 +3,7 @@ const Success = require("../utils/constants").successMessages;
 const { getInstituteById } = require("./institute");
 const { registerInstituteUser } = require("./auth");
 const AccountRoles = require("../utils/constants").account;
+const UserControllers = require("./user");
 
 async function createInsAdmin(req, res) {
   if (!req.body.instituteId) {
@@ -43,6 +44,21 @@ async function createInsAdmin(req, res) {
   }
 }
 
+async function getAdminsOfInstitute(req, res) {
+  const admins = await UserControllers.fetchUsersByInstituteAndRole(
+    req.authUser.instituteId,
+    AccountRoles.accRoles.instituteAdmin
+  );
+  return res.status(200).json({
+    status: Success.SUCCESS,
+    message: "Fetched institute admins",
+    data: {
+      admins: admins,
+    },
+  });
+}
+
 module.exports = {
   createInsAdmin,
+  getAdminsOfInstitute,
 };

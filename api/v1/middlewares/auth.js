@@ -500,6 +500,63 @@ module.exports.checkInsModeratorAccess = async (req, res, next) => {
   }
 };
 
+module.exports.checkInsTeacherAccess = async (req, res, next) => {
+  var authUser = await AuthControllers.getAuthUserWithProjection(
+    req.tokenData.authId,
+    {
+      _id: 1,
+      role: 1,
+      status: 1,
+    }
+  );
+  // if user details not found or role is not admin
+  if (
+    !authUser ||
+    (authUser.role != AccountContants.accRoles.instituteModerator &&
+      authUser.role != AccountContants.accRoles.instituteAdmin &&
+      authUser.role != AccountContants.accRoles.teacher)
+  ) {
+    return res.status(401).json({
+      status: Errors.FAILED,
+      message: Errors.OPERATION_NOT_PERMITTED,
+    });
+  }
+
+  if (authUser.status != AccountContants.accountStatus.active) {
+    return res.status(401).json({
+      status: Errors.FAILED,
+      message: `Your account status is ${authUser.status}.`,
+    });
+  }
+
+  const insAdmin = await UserControllers.fetchInstituteIdByUserId(
+    req.tokenData.authId
+  );
+
+  const institute = await getInstituteById(insAdmin.instituteId);
+  if (!institute || !institute._id) {
+    return res.status(400).json({
+      status: Errors.FAILED,
+      message: "Institute not found/deleted",
+    });
+  }
+
+  if (
+    insAdmin &&
+    insAdmin._id &&
+    institute._id.toString() === insAdmin.instituteId.toString()
+  ) {
+    req.institute = institute;
+    req.authUser = insAdmin;
+    next();
+  } else {
+    return res.status(401).json({
+      status: Errors.FAILED,
+      message: "You are not allowed to perform this operation",
+    });
+  }
+};
+
 /*
   Check if oauth access token is valid
 */

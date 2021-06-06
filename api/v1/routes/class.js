@@ -31,4 +31,32 @@ router.get(
   }
 );
 
+router.post(
+  "/class-teacher",
+  AuthMiddlewares.checkAccessToken,
+  AuthMiddlewares.validateAccessToken,
+  AuthMiddlewares.checkInsAdminAccess,
+  async (req, res) => {
+    try {
+      await ClassControllers.assignClassTeacher(req, res);
+    } catch (error) {
+      internalServerError(res, error);
+    }
+  }
+);
+
+router.post(
+  "/subject-teacher",
+  AuthMiddlewares.checkAccessToken,
+  AuthMiddlewares.validateAccessToken,
+  AuthMiddlewares.checkInsAdminAccess,
+  async (req, res) => {
+    try {
+      await ClassControllers.assignSubjectTeacher(req, res);
+    } catch (error) {
+      internalServerError(res, error);
+    }
+  }
+);
+
 module.exports = router;
