@@ -9,7 +9,7 @@ const UserControllers = require("../controllers/user");
 const Helpers = require("../../../core/helpers");
 const AccountConstants = require("../utils/constants").account;
 const PasswordGenerator = require("generate-password");
-
+const StringUtils = require("../utils/string");
 const emailSuffix = "@a-m-s.com";
 
 /* User registration with email   
@@ -53,7 +53,7 @@ module.exports.registerWithEmail = async (req, res, registerRole) => {
   await newAuthUser.save(async (error, savedUser) => {
     if (savedUser) {
       savedUser.firstName = req.body.name.toString().split(" ")[0];
-      savedUser.lastName = req.body.name.toString().split(" ")[1];
+      savedUser.lastName = req.body.name.toString().split(" ").slice(1);
       await TokenControllers.sendVerificationMail(
         savedUser._id,
         savedUser.email,
@@ -119,7 +119,7 @@ module.exports.registerAsAdmin = async (req, res) => {
 };
 
 module.exports.registerInstituteUser = async (data) => {
-  const username = createUsername(data.name);
+  const username = StringUtils.createUsername(data.name);
 
   const availableUsername = await findAvailableUsername(username);
 
@@ -202,10 +202,6 @@ module.exports.registerInstituteUser = async (data) => {
     };
   }
 };
-
-function createUsername(name) {
-  return name.toString().toLowerCase().replace(" ", ".");
-}
 
 async function findAvailableUsername(username) {
   const max_tries = 15;
