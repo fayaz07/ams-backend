@@ -673,7 +673,10 @@ module.exports.refreshTokens = async (req, res) => {
 
   // check if refresh token is equal to what we have in the database
   if (authUser.refreshToken === req.refreshToken) {
-    if (authUser.provider === Headers.EMAIL_KEY) {
+    if (
+      authUser.provider === Headers.EMAIL_KEY ||
+      authUser.provider === Headers.USERNAME_KEY
+    ) {
       _generateNewTokensAndSendBackToClient(authUser, res);
     } else {
       console.log(`Invalid provider type ${authUser.provider}`);
@@ -975,6 +978,7 @@ async function _generateNewTokensAndSendBackToClient(authUser, res) {
     if (savedUser) {
       return res
         .status(200)
+        .header("Access-Control-Expose-Headers", "access_token, refresh_token")
         .header(Headers.ACCESS_TOKEN, newAccessToken)
         .header(Headers.REFRESH_TOKEN, authUser.refreshToken)
         .json({

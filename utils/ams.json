@@ -69,7 +69,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"vijay.mallayya1\",\n    \"password\": \"gCH3SsOY$\"\n}",
+							"raw": "{\n    \"username\": \"yuzi.chahal\",\n    \"password\": \"BvgJ4gR_8\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -798,7 +798,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Virat Kohli\"\n}",
+							"raw": "{\n    \"name\": \"Kunal Kamra\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -923,7 +923,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Yuzi Chahal\",\n    \"subjects\": [\"60bbb4bb7dda58c2966b8e1a\", \"60bbb4c87dda58c2966b8e1b\", \"60bbb4c87dda58c2966b8e1c\"]\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -939,6 +939,47 @@
 								"ins",
 								"teacher",
 								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get assigned classes to me",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ins/teacher/assigned",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ins",
+								"teacher",
+								"assigned"
 							]
 						}
 					},
@@ -972,6 +1013,35 @@
 							"path": [
 								"class",
 								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get class data by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/class/id/60bc9602d6557e4efdf22b10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"class",
+								"id",
+								"60bc9602d6557e4efdf22b10"
 							]
 						}
 					},
