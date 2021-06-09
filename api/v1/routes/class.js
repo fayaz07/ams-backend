@@ -21,7 +21,7 @@ router.get(
   "/all",
   AuthMiddlewares.checkAccessToken,
   AuthMiddlewares.validateAccessToken,
-  AuthMiddlewares.checkInsAdminAccess,
+  AuthMiddlewares.checkInsTeacherAccess,
   async (req, res) => {
     try {
       await ClassControllers.getAllClassesOfInstitute(req, res);
@@ -35,7 +35,7 @@ router.post(
   "/class-teacher",
   AuthMiddlewares.checkAccessToken,
   AuthMiddlewares.validateAccessToken,
-  AuthMiddlewares.checkInsAdminAccess,
+  AuthMiddlewares.checkInsModeratorAccess,
   async (req, res) => {
     try {
       await ClassControllers.assignClassTeacher(req, res);
@@ -49,7 +49,7 @@ router.post(
   "/subject-teacher",
   AuthMiddlewares.checkAccessToken,
   AuthMiddlewares.validateAccessToken,
-  AuthMiddlewares.checkInsAdminAccess,
+  AuthMiddlewares.checkInsModeratorAccess,
   async (req, res) => {
     try {
       await ClassControllers.assignSubjectTeacher(req, res);

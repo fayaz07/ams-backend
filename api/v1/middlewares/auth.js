@@ -519,6 +519,7 @@ module.exports.checkInsTeacherAccess = async (req, res, next) => {
     return res.status(401).json({
       status: Errors.FAILED,
       message: Errors.OPERATION_NOT_PERMITTED,
+      user: authUser,
     });
   }
 

@@ -21,7 +21,7 @@ router.get(
   "/all",
   AuthMiddlewares.checkAccessToken,
   AuthMiddlewares.validateAccessToken,
-  AuthMiddlewares.checkInsAdminAccess,
+  AuthMiddlewares.checkInsTeacherAccess,
   async (req, res) => {
     try {
       await SubjectControllers.getAllSubjectsOfInstitute(req, res);
