@@ -316,6 +316,42 @@ async function getClassCountByConditionAndProjection(condition, projection) {
   return await Class.find(condition, projection).countDocuments();
 }
 
+async function fetchClassById(req, res) {
+  var errMsg = "";
+  if (!req.params.id) errMsg = "ClassId is required";
+
+  if (errMsg)
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: errMsg,
+    });
+
+  const classData = await getClassById(req.params.id);
+  if (!classData || !classData._id) {
+    return res.status(403).json({
+      status: errors.FAILED,
+      message: "Class not found",
+    });
+  }
+
+  return res.status(200).json({
+    status: success.SUCCESS,
+    message: "Fetched class data",
+    data: {
+      class: classData,
+    },
+  });
+}
+
+async function getClassessAssignedToMe(teacherId) {
+  const id = mongoose.Types.ObjectId(teacherId.toString());
+  // console.log(id);
+  const assigned = await Class.find({
+    subjects: { $elemMatch: { teacherId: id } },
+  });
+  return assigned;
+}
+
 module.exports = {
   createClass,
   getClassByIdAndProjection,
@@ -327,4 +363,6 @@ module.exports = {
   addAttendanceSlot,
   getClassCountByConditionAndProjection,
   checkIfSlotIsCreated,
+  fetchClassById,
+  getClassessAssignedToMe,
 };

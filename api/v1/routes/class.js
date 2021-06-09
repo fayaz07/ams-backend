@@ -18,6 +18,20 @@ router.post(
 );
 
 router.get(
+  "/id/:id",
+  AuthMiddlewares.checkAccessToken,
+  AuthMiddlewares.validateAccessToken,
+  AuthMiddlewares.checkInsTeacherAccess,
+  async (req, res) => {
+    try {
+      await ClassControllers.fetchClassById(req, res);
+    } catch (error) {
+      internalServerError(res, error);
+    }
+  }
+);
+
+router.get(
   "/all",
   AuthMiddlewares.checkAccessToken,
   AuthMiddlewares.validateAccessToken,

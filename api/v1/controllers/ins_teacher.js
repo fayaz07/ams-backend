@@ -4,6 +4,7 @@ const { registerInstituteUser } = require("./auth");
 const AccountRoles = require("../utils/constants").account;
 const { getSubjectsIdsFromIdsArray } = require("./subject");
 const UserControllers = require("./user");
+const ClassControllers = require("./class");
 
 async function createInsTeacher(req, res) {
   var errMsg = null;
@@ -84,7 +85,23 @@ async function getTeachersOfInstitute(req, res) {
   });
 }
 
+// teacher only
+async function getMyClasses(req, res) {
+  const assigned = await ClassControllers.getClassessAssignedToMe(
+    req.tokenData.authId
+  );
+
+  return res.status(200).json({
+    status: Success.SUCCESS,
+    message: "Fetched classes assigned to you",
+    data: {
+      classes: assigned,
+    },
+  });
+}
+
 module.exports = {
   createInsTeacher,
   getTeachersOfInstitute,
+  getMyClasses,
 };

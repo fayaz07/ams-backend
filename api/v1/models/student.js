@@ -13,7 +13,6 @@ var attendanceSchema = mongoose.Schema(
   {
     date: {
       type: Date,
-      unique: true,
     },
     classId: { type: mongoose.Schema.Types.ObjectId },
     attendance: [subjectHoursSchema],
