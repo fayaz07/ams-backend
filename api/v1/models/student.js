@@ -1,21 +1,21 @@
 const mongoose = require("mongoose");
 const { STUDENT_COLLECTION } = require("../utils/constants").collections;
 
-const subjectHoursSchema = mongoose.Schema(
+const subjectHoursSchema = new mongoose.Schema(
   {
-    subId: { type: mongoose.Schema.Types.ObjectId, unique: true },
+    subId: { type: mongoose.Schema.Types.ObjectId },
     hours: { Number, default: 0 },
   },
   { _id: false }
 );
 
-var attendanceSchema = mongoose.Schema(
+var attendanceSchema = new mongoose.Schema(
   {
     date: {
       type: Date,
     },
     classId: { type: mongoose.Schema.Types.ObjectId },
-    attendance: [subjectHoursSchema],
+    subjects: [subjectHoursSchema],
   },
   { _id: false }
 );
@@ -37,6 +37,9 @@ const studentSchema = new mongoose.Schema(
     rollNumber: {
       type: String,
       required: true,
+    },
+    phone: {
+      type: String,
     },
     photoUrl: {
       type: String,

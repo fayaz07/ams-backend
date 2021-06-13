@@ -30,15 +30,14 @@ async function createStudent(req, res) {
     createdBy: req.authUser.userId,
     classId: classInstance._id,
     rollNumber: req.body.rollNumber,
+    phone: req.body.phone,
   });
 
   try {
     const saved = await student.save();
-    const addToClass = await ClassControllers.addStudentToClass(
-      classInstance._id,
-      student._id
-    );
-    console.log(addToClass);
+    // const addToClass =
+    await ClassControllers.addStudentToClass(classInstance._id, student._id);
+    // console.log(addToClass);
     return res.status(201).json({
       status: success.SUCCESS,
       message: "Created new Student",

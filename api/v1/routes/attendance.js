@@ -32,13 +32,13 @@ router.post(
 );
 
 router.get(
-  "/",
+  "/slots/:classId",
   AuthMiddlewares.checkAccessToken,
   AuthMiddlewares.validateAccessToken,
   AuthMiddlewares.checkInsTeacherAccess,
   async (req, res) => {
     try {
-      await AttendanceControllers.getAttendance(req, res);
+      await AttendanceControllers.getAttendanceSlotsForClass(req, res);
     } catch (error) {
       internalServerError(res, error);
     }
