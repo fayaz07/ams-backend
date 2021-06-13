@@ -691,34 +691,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "get all students",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/institute/students",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"institute",
-								"students"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -1128,35 +1100,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "get students of class",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/class/students/60c39fd2bccb6d25c76dc7ff",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"class",
-								"students",
-								"60c39fd2bccb6d25c76dc7ff"
-							]
-						}
-					},
-					"response": []
 				}
 			],
 			"event": [
@@ -1309,6 +1252,35 @@
 			"name": "student",
 			"item": [
 				{
+					"name": "get students of class",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/student/class/60c39fd2bccb6d25c76dc7ff",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"student",
+								"class",
+								"60c39fd2bccb6d25c76dc7ff"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create student",
 					"request": {
 						"auth": {
@@ -1339,6 +1311,34 @@
 							],
 							"path": [
 								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all students",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/student/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"student",
+								"all"
 							]
 						}
 					},

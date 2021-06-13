@@ -93,13 +93,67 @@ async function postAttendanceForASubject(students) {
 }
 
 async function getListOfStudentsByIds(studentIds) {
-  return await Student.find({ _id: { $in: studentIds } });
+  return await Student.find(
+    { _id: { $in: studentIds } },
+    { attendance: 0, createdAt: 0, updatedAt: 0, __v: 0 }
+  );
+}
+
+async function getAllStudents(req, res) {
+  const students = await Student.find(
+    { instituteId: req.institute._id },
+    { attendance: 0, createdAt: 0, updatedAt: 0, __v: 0 }
+  );
+
+  return res.status(200).json({
+    status: success.SUCCESS,
+    message: "Fetched students of institute",
+    data: {
+      students: students,
+    },
+  });
+}
+
+async function getStudentsOfClass(req, res) {
+  if (!req.params.id) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "ClassId is required",
+    });
+  }
+
+  const classInstance = await ClassControllers.getClassByIdAndProjection(
+    req.params.id,
+    {
+      students: 1,
+    }
+  );
+  //console.log(classInstance);
+
+  if (classInstance.students.length == 0) {
+    return res.status(200).json({
+      status: success.SUCCESS,
+      message: "There are currently no students in the class",
+    });
+  }
+
+  const students = await getListOfStudentsByIds(classInstance.students);
+
+  return res.status(200).json({
+    status: success.SUCCESS,
+    message: "Fetched students of class",
+    data: {
+      students: students,
+    },
+  });
 }
 
 module.exports = {
   createStudent,
+  getAllStudents,
   getListOfStudentsByIds,
   getStudentsCountByInstituteId,
   createAttendanceSlots,
   postAttendanceForASubject,
+  getStudentsOfClass,
 };

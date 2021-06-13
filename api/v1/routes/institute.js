@@ -45,18 +45,4 @@ router.get(
   }
 );
 
-router.get(
-  "/students",
-  AuthMiddlewares.checkAccessToken,
-  AuthMiddlewares.validateAccessToken,
-  AuthMiddlewares.checkInsModeratorAccess,
-  async (req, res) => {
-    try {
-      await InstituteControllers.getStudentsOfInstitute(req, res);
-    } catch (error) {
-      internalServerError(res, error);
-    }
-  }
-);
-
 module.exports = router;
