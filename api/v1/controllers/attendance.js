@@ -9,18 +9,14 @@ async function postAttendanceForMultipleStudents(req, res) {
   if (!req.body.attendance) errMsg = "Attendance field is required";
   else if (!Array.isArray(req.body.attendance))
     errMsg = "Attendance field must be an array";
-  else if (req.body.attendance.length < 1) errMsg = "Attendance field is";
+  else if (req.body.attendance.length < 1)
+    errMsg = "Attendance field is required";
   else if (!req.body.classId) errMsg = "Class Id is required";
   else if (!req.body.subjectId) errMsg = "Subject Id is required";
   else if (!req.body.date) errMsg = "Date is required";
 
   /*
-    [
-      {
-      studentId: "mallayya",
-      hours: 1
-      }
-    ...]
+
   */
 
   var sDate = null;

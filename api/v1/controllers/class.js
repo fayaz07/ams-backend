@@ -3,6 +3,7 @@ const { errors } = require("../utils/constants");
 const success = require("../utils/constants").successMessages;
 const { getSubjectsIdsFromIdsArray } = require("./subject");
 const UserControllers = require("./user");
+const Student = require("../models/student");
 const mongoose = require("mongoose");
 
 async function createClass(req, res) {
@@ -352,8 +353,43 @@ async function getClassessAssignedToMe(teacherId) {
   return assigned;
 }
 
+async function getStudentsOfClass(req, res) {
+  if (!req.params.id) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "ClassId is required",
+    });
+  }
+
+  const classInstance = await getClassByIdAndProjection(req.params.id, {
+    students: 1,
+  });
+  //console.log(classInstance);
+
+  if (classInstance.students.length == 0) {
+    return res.status(200).json({
+      status: success.SUCCESS,
+      message: "There are currently no students in the class",
+    });
+  }
+
+  const students = await Student.find(
+    { _id: { $in: classInstance.students } },
+    { attendance: 0, createdAt: 0, updatedAt: 0, __v: 0 }
+  );
+
+  return res.status(200).json({
+    status: success.SUCCESS,
+    message: "Fetched students of class",
+    data: {
+      students: students,
+    },
+  });
+}
+
 module.exports = {
   createClass,
+  getStudentsOfClass,
   getClassByIdAndProjection,
   addStudentToClass,
   assignSubjectTeacher,

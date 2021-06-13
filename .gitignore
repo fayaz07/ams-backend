@@ -8,3 +8,4 @@ keys/public.pem
 keys/publicr.pem
 
 .nyc_output
+creds.txt

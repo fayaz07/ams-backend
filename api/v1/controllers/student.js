@@ -92,8 +92,13 @@ async function postAttendanceForASubject(students) {
   });
 }
 
+async function getListOfStudentsByIds(studentIds) {
+  return await Student.find({ _id: { $in: studentIds } });
+}
+
 module.exports = {
   createStudent,
+  getListOfStudentsByIds,
   getStudentsCountByInstituteId,
   createAttendanceSlots,
   postAttendanceForASubject,

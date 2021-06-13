@@ -73,4 +73,18 @@ router.post(
   }
 );
 
+router.get(
+  "/students/:id",
+  AuthMiddlewares.checkAccessToken,
+  AuthMiddlewares.validateAccessToken,
+  AuthMiddlewares.checkInsTeacherAccess,
+  async (req, res) => {
+    try {
+      await ClassControllers.getStudentsOfClass(req, res);
+    } catch (error) {
+      internalServerError(res, error);
+    }
+  }
+);
+
 module.exports = router;
