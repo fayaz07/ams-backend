@@ -69,7 +69,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"yuzi.chahal\",\n    \"password\": \"BvgJ4gR_8\"\n}",
+							"raw": "{\n    \"username\": \"mallayya.v\",\n    \"password\": \"Cvx3f_9Va\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -691,6 +691,34 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get all students",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/institute/students",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"institute",
+								"students"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -714,7 +742,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"instituteId\": \"60ba656a8e00acaa09803756\"\n}",
+							"raw": "{\n    \"instituteId\": \"60c39e8abccb6d25c76dc7f6\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -863,6 +891,296 @@
 			]
 		},
 		{
+			"name": "subjects",
+			"item": [
+				{
+					"name": "create subject",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Social\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subject",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subject"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all subjects of institute",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subject/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subject",
+								"all"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "class",
+			"item": [
+				{
+					"name": "get all classes of institute",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/class/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"class",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get class data by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/class/id/60bc9602d6557e4efdf22b10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"class",
+								"id",
+								"60bc9602d6557e4efdf22b10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create class",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"IB\",\n    \"subjects\": [\"60c39f63bccb6d25c76dc7fb\", \"60c39f6bbccb6d25c76dc7fc\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/class",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "assign class teacher",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"teacherId\": \"60c39f98bccb6d25c76dc7fd\",\n    \"classId\": \"60c39fd2bccb6d25c76dc7ff\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/class/class-teacher",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"class",
+								"class-teacher"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "assign subject teacher",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"teacherId\": \"60c39f98bccb6d25c76dc7fd\",\n    \"classId\": \"60c39fd2bccb6d25c76dc7ff\",\n    \"subjectId\": \"60c39f6bbccb6d25c76dc7fc\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/class/subject-teacher",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"class",
+								"subject-teacher"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get students of class",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/class/students/60c39fd2bccb6d25c76dc7ff",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"class",
+								"students",
+								"60c39fd2bccb6d25c76dc7ff"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
 			"name": "institute teacher",
 			"item": [
 				{
@@ -882,7 +1200,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Yuzi Chahal\",\n    \"subjects\": [\"60bbb4bb7dda58c2966b8e1a\", \"60bbb4c87dda58c2966b8e1b\", \"60bbb4c87dda58c2966b8e1c\"],\n    \"phone\": \"9502039079\",\n    \"regId\": \"RE81\"\n}",
+							"raw": "{\n    \"name\": \"de Villiers\",\n    \"subjects\": [\"60c39f63bccb6d25c76dc7fb\", \"60c39f6bbccb6d25c76dc7fc\", \"60bbb4c87dda58c2966b8e1c\"],\n    \"phone\": \"9502039079\",\n    \"regId\": \"RE81\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -988,267 +1306,6 @@
 			]
 		},
 		{
-			"name": "class",
-			"item": [
-				{
-					"name": "get all classes of institute",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/class/all",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"class",
-								"all"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get class data by id",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/class/id/60bc9602d6557e4efdf22b10",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"class",
-								"id",
-								"60bc9602d6557e4efdf22b10"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create class",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"IB\",\n    \"subjects\": [\"60bc95e3d6557e4efdf22b0e\", \"60bc95f7d6557e4efdf22b0f\"]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/class",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"class"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "assign class teacher",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"teacherId\": \"60bc8562bfc62d441cd52a2a\",\n    \"classId\": \"60bc9602d6557e4efdf22b10\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/class/class-teacher",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"class",
-								"class-teacher"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "assign subject teacher",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"teacherId\": \"60bc8562bfc62d441cd52a2a\",\n    \"classId\": \"60bc9602d6557e4efdf22b10\",\n    \"subjectId\": \"60bc95f7d6557e4efdf22b0f\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/class/subject-teacher",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"class",
-								"subject-teacher"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			]
-		},
-		{
-			"name": "subjects",
-			"item": [
-				{
-					"name": "create subject",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Maths\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/subject",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"subject"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get all subjects of institute",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/subject/all",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"subject",
-								"all"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "student",
 			"item": [
 				{
@@ -1268,7 +1325,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"de Villiers\",\n    \"classId\": \"60bc9602d6557e4efdf22b10\",\n    \"rollNumber\": \"A123\"\n}",
+							"raw": "{\n    \"name\": \"de Villiers\",\n    \"classId\": \"60c39fd2bccb6d25c76dc7ff\",\n    \"rollNumber\": \"A123\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

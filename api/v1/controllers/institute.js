@@ -5,6 +5,7 @@ const Success = require("../utils/constants").successMessages;
 const AccountRoles = require("../utils/constants").account;
 const UserControllers = require("./user");
 const StudentControllers = require("./student");
+const Student = require("../models/student");
 
 async function addInstitute(req, res) {
   const data = req.body;
@@ -101,10 +102,26 @@ async function getCurrentInstitute(req, res) {
   });
 }
 
+async function getStudentsOfInstitute(req, res) {
+  const students = await Student.find(
+    { instituteId: req.institute._id },
+    { attendance: 0, createdAt: 0, updatedAt: 0, __v: 0 }
+  );
+
+  return res.status(200).json({
+    status: Success.SUCCESS,
+    message: "Fetched students of institute",
+    data: {
+      students: students,
+    },
+  });
+}
+
 module.exports = {
   addInstitute,
   getInstituteByRegId,
   getInstituteById,
   getInstitutes,
   getCurrentInstitute,
+  getStudentsOfInstitute,
 };
