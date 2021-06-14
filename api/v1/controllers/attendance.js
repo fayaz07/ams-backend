@@ -3,6 +3,7 @@ const success = require("../utils/constants").successMessages;
 const ClassControllers = require("./class");
 const StudentControllers = require("./student");
 const mongoose = require("mongoose");
+const Class = require("../models/class");
 
 async function postAttendanceForMultipleStudents(req, res) {
   var errMsg = null;
@@ -125,19 +126,39 @@ async function createAttendanceSlot(req, res) {
 
   const subjectsList = [];
   var totalHours = 0;
+
+  var unavailableSubjects = [];
+
   classData.subjects.forEach((e) => {
-    var hoursForThisSubject = req.body.subjects[e.subjectId.toString().trim()];
-    totalHours += hoursForThisSubject;
-    subjectsList.push({
-      subjectId: mongoose.Types.ObjectId(e.subjectId.toString()),
-      maxHours: hoursForThisSubject ?? 0,
-    });
+    // check if unavailable
+    const sid = e.subjectId.toString().trim();
+
+    var hoursForThisSubject = req.body.subjects[sid];
+    // console.log(hoursForThisSubject);
+    if (!hoursForThisSubject && hoursForThisSubject != 0) {
+      unavailableSubjects.push(sid);
+    } else {
+      totalHours += hoursForThisSubject;
+      subjectsList.push({
+        subjectId: e.subjectId,
+        maxHours: hoursForThisSubject ?? 0,
+      });
+    }
   });
 
-  if (totalHours > 8) {
+  if (unavailableSubjects.length > 0) {
     return res.status(400).json({
       status: errors.FAILED,
-      message: "Total hours cannot exceed 8",
+      message:
+        "Hours not specified for following subjects: " +
+        unavailableSubjects.join(", "),
+    });
+  }
+
+  if (totalHours > 10 || totalHours < 2) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "Total hours must be between 2 and 10",
     });
   }
 
@@ -202,7 +223,46 @@ async function createAttendanceSlot(req, res) {
   }
 }
 
+async function getAttendanceSlotsForClass(req, res) {
+  if (!req.params.classId) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "ClassId is required",
+    });
+  }
+
+  const cll = await Class.aggregate([
+    {
+      $match: { _id: mongoose.Types.ObjectId(req.params.classId) },
+    },
+    {
+      $limit: 1,
+    },
+    {
+      $group: "_id",
+    },
+    { $unwind: "$attendance" },
+    {
+      $sort: { "attendance.date": 1 },
+    },
+    {
+      $limit: 10,
+    },
+    { $project: { attendance: { date: 1, subjects: 1 } } },
+  ]);
+  //console.log(cll);
+
+  return res.status(200).json({
+    status: success.SUCCESS,
+    message: "Fetched slots",
+    data: {
+      slots: cll,
+    },
+  });
+}
+
 module.exports = {
   postAttendanceForMultipleStudents,
   createAttendanceSlot,
+  getAttendanceSlotsForClass,
 };

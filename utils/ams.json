@@ -1366,7 +1366,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"date\": \"2021-06-06\",\n    \"classId\": \"60bc9602d6557e4efdf22b10\",\n    \"subjects\": {\n        \"60bc95e3d6557e4efdf22b0e\": 2\n    }\n}",
+							"raw": "{\n    \"date\": \"2021-06-17\",\n    \"classId\": \"60c639cfee9f7072410e68f4\",\n    \"subjects\": {\n        \"60c39f63bccb6d25c76dc7fb\": 3,\n        \"60c39f6bbccb6d25c76dc7fc\": 3\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1419,6 +1419,41 @@
 							"path": [
 								"attendance",
 								"multiple"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get attendance slots",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/attendance/slots/:classId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"attendance",
+								"slots",
+								":classId"
+							],
+							"variable": [
+								{
+									"key": "classId",
+									"value": "60c639cfee9f7072410e68f4"
+								}
 							]
 						}
 					},
