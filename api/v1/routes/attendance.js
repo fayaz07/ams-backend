@@ -18,13 +18,13 @@ router.post(
 );
 
 router.post(
-  "/multiple",
+  "/subject/single",
   AuthMiddlewares.checkAccessToken,
   AuthMiddlewares.validateAccessToken,
   AuthMiddlewares.checkInsTeacherAccess,
   async (req, res) => {
     try {
-      await AttendanceControllers.postAttendanceForMultipleStudents(req, res);
+      await AttendanceControllers.postAttendanceForSingleSubject(req, res);
     } catch (error) {
       internalServerError(res, error);
     }

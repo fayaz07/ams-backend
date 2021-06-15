@@ -5,7 +5,7 @@ const StudentControllers = require("./student");
 const mongoose = require("mongoose");
 const Class = require("../models/class");
 
-async function postAttendanceForMultipleStudents(req, res) {
+async function postAttendanceForSingleSubject(req, res) {
   var errMsg = null;
   if (!req.body.attendance) errMsg = "Attendance field is required";
   else if (!Array.isArray(req.body.attendance))
@@ -15,10 +15,6 @@ async function postAttendanceForMultipleStudents(req, res) {
   else if (!req.body.classId) errMsg = "Class Id is required";
   else if (!req.body.subjectId) errMsg = "Subject Id is required";
   else if (!req.body.date) errMsg = "Date is required";
-
-  /*
-
-  */
 
   var sDate = null;
   try {
@@ -69,7 +65,7 @@ async function postAttendanceForMultipleStudents(req, res) {
 
   // "studentId": "60bcb42809db206581791442",
   // "hours": 1,
-
+  console.log(req.body);
   const canPostAttendance = await await ClassControllers.getClassCountByConditionAndProjection(
     { _id: classId, attendance: { $in: [sDate] } }
   );
@@ -231,16 +227,19 @@ async function getAttendanceSlotsForClass(req, res) {
     });
   }
 
+  const cid = mongoose.Types.ObjectId(req.params.classId);
+
   const cll = await Class.aggregate([
     {
-      $match: { _id: mongoose.Types.ObjectId(req.params.classId) },
+      $match: { _id: cid },
     },
     {
       $limit: 1,
     },
     {
-      $group: "_id",
+      $group: { _id: "$_id", attendance: { $addToSet: "$attendance" } },
     },
+    { $project: { attendance: { date: 1, subjects: 1 } } },
     { $unwind: "$attendance" },
     {
       $sort: { "attendance.date": 1 },
@@ -248,7 +247,6 @@ async function getAttendanceSlotsForClass(req, res) {
     {
       $limit: 10,
     },
-    { $project: { attendance: { date: 1, subjects: 1 } } },
   ]);
   //console.log(cll);
 
@@ -256,13 +254,13 @@ async function getAttendanceSlotsForClass(req, res) {
     status: success.SUCCESS,
     message: "Fetched slots",
     data: {
-      slots: cll,
+      slots: cll[0].attendance,
     },
   });
 }
 
 module.exports = {
-  postAttendanceForMultipleStudents,
+  postAttendanceForSingleSubject,
   createAttendanceSlot,
   getAttendanceSlotsForClass,
 };

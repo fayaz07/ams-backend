@@ -3,13 +3,13 @@ const { CLASS_COLLECTION } = require("../utils/constants").collections;
 
 var subTeacher = new mongoose.Schema(
   {
-    subjectId: {
+    sId: {
       type: mongoose.Schema.Types.ObjectId,
-      unique: true,
+      default: null,
     },
-    teacherId: {
+    tId: {
       type: mongoose.Schema.Types.ObjectId,
-      unique: true,
+      default: null,
     },
   },
   { _id: false }
@@ -17,7 +17,7 @@ var subTeacher = new mongoose.Schema(
 
 var subjectHour = new mongoose.Schema(
   {
-    subjectId: {
+    sId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       unique: true,
@@ -26,6 +26,10 @@ var subjectHour = new mongoose.Schema(
       type: Number,
       max: 4,
       default: 0,
+    },
+    posted: {
+      type: Boolean,
+      default: false,
     },
   },
   { _id: false }
@@ -62,6 +66,7 @@ const classSchema = new mongoose.Schema(
     },
     classTeacher: {
       type: mongoose.Schema.Types.ObjectId,
+      default: null,
     },
     subjects: {
       type: [subTeacher],

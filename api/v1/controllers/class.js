@@ -31,8 +31,8 @@ async function createClass(req, res) {
 
   subjects.forEach((e) => {
     subIds.push({
-      subjectId: e._id,
-      teacherId: null,
+      sId: e._id,
+      tId: null,
     });
   });
 
@@ -74,7 +74,7 @@ async function getAllClassesOfInstitute(req, res) {
     {
       instituteId: req.authUser.instituteId,
     },
-    { "subjects._id": 0 }
+    { "subjects._id": 0, attendance: 0 }
   );
   return res.status(200).json({
     status: success.SUCCESS,
@@ -221,21 +221,21 @@ async function assignSubjectTeacher(req, res) {
     // if subjectId matches, then store the index
     for (var i = 0; i < classInstance.subjects.length; i++) {
       const currSubject = classInstance.subjects[i];
-      const subA = new String(currSubject.subjectId).trim();
+      const subA = new String(currSubject.sId).trim();
       const subB = new String(req.body.subjectId).trim();
 
-      const teacherA = new String(currSubject.teacherId).trim();
+      const teacherA = new String(currSubject.tId).trim();
       const teacherB = new String(teacher._id).trim();
 
       // console.log("\n" + teacherA + "\n" + teacherB);
       // console.log(teacherA == teacherB);
 
       // teacher already assigned to some subject
-      if (currSubject.teacherId && teacherA == teacherB) {
+      if (currSubject.tId && teacherA == teacherB) {
         return res.status(400).json({
           status: errors.FAILED,
           message:
-            currSubject.subjectId.toString() === req.body.subjectId.toString()
+            currSubject.sId.toString() === req.body.subjectId.toString()
               ? "Teacher already assigned to the specific subject"
               : "Teacher already assigned to other subject",
         });
@@ -256,7 +256,7 @@ async function assignSubjectTeacher(req, res) {
     }
     // console.log(subIndex);
     const subTeacher = classInstance.subjects[subIndex];
-    subTeacher.teacherId = teacher._id;
+    subTeacher.tId = teacher._id;
 
     classInstance.subjects[i] = subTeacher;
 
@@ -326,7 +326,10 @@ async function fetchClassById(req, res) {
       message: errMsg,
     });
 
-  const classData = await getClassById(req.params.id);
+  const classData = await getClassByIdAndProjection(req.params.id, {
+    "subjects._id": 0,
+    attendance: 0,
+  });
   if (!classData || !classData._id) {
     return res.status(403).json({
       status: errors.FAILED,
@@ -347,7 +350,7 @@ async function getClassessAssignedToMe(teacherId) {
   const id = mongoose.Types.ObjectId(teacherId.toString());
   // console.log(id);
   const assigned = await Class.find({
-    subjects: { $elemMatch: { teacherId: id } },
+    subjects: { $elemMatch: { tId: id } },
   });
   return assigned;
 }
