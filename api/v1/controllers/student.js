@@ -66,29 +66,62 @@ async function createAttendanceSlots(students, attendanceSlot) {
   );
 }
 
-async function postAttendanceForASubject(students) {
+async function postAttendanceForASubject(
+  students,
+  attendanceList,
+  sDate,
+  subjectId
+) {
   // console.log(students);
-  // await Student.find(
-  //   { _id: { $in: students } },
-  //   { attendance: 1, rollNumber: 1 }
-  // )
-  //   .cursor()
-  //   .eachAsync(function (doc) {
-  //     //      doc.foo = "bar";
-  //     console.log(doc);
-  //     doc.rollNumber = "A1";
-  //     return doc;
-  //   });
-  // on("data", function (doc) {
-  //   console.log(doc.foo);
-  // });
-  const cursor = Student.find(
-    { _id: { $in: students } },
-    { attendance: 1 }
-  ).cursor();
-  cursor.eachAsync(async (doc) => {
-    await doc.save();
+  // console.log(attendanceList);
+  // console.log(attendanceList[students[0]]);
+  students.forEach(async (st) => {
+    const stData = await Student.findOne(
+      { _id: st },
+      { attendance: { $elemMatch: { date: sDate } } }
+    );
+    // console.log(stData.attendance[0].subjects);
+    // console.log(attendanceList[st]);
+    stData.attendance[0].subjects.set(subjectId, attendanceList[st]);
+    // console.log(stData.attendance[0].subjects);
+    // console.log("----------------");
+    await stData.save();
   });
+
+  // const cursor = Student.aggregate([
+  //   {
+  //     $match: { _id: { $in: students } },
+  //   },
+  //   {
+  //     $group: {
+  //       _id: "$_id",
+  //       attendance: { $addToSet: "$attendance" },
+  //     },
+  //   },
+  //   { $unwind: "$attendance" },
+  //   {
+  //     $match: { attendance: { $elemMatch: { date: sDate } } },
+  //   },
+  //   {
+  //     $limit: 1,
+  //   },
+  //   {
+  //     $project: {
+  //       attendance: { subjects: 1 },
+  //     },
+  //   },
+  // ]).cursor();
+  // // .exec();
+  // cursor.then((v) => {
+  //   console.log(v);
+  // });
+  // cursor.eachAsync(async (doc) => {
+  //   // console.log(attendanceList[doc._id]);
+  //   // console.log(doc.attendance[0].subjects);
+  //   // doc.attendance[0].subjects[subjectId] = attendanceList[doc._id];
+  //   // console.log(doc.attendance[0].subjects);
+  //   console.log(typeof doc);
+  // });
 }
 
 async function getListOfStudentsByIds(studentIds) {

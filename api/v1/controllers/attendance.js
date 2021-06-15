@@ -7,18 +7,20 @@ const Class = require("../models/class");
 
 async function postAttendanceForSingleSubject(req, res) {
   var errMsg = null;
-  if (!req.body.attendance) errMsg = "Attendance field is required";
-  else if (!Array.isArray(req.body.attendance))
-    errMsg = "Attendance field must be an array";
-  else if (req.body.attendance.length < 1)
-    errMsg = "Attendance field is required";
+  if (!req.body.students) errMsg = "Students map field is required";
+  // else if (!Array.isArray(req.body.attendance))
+  //   errMsg = "Attendance field must be an array";
+  // else if (!(req.body.students instanceof Set))
+  //   errMsg = "Students field must be an Map";
+  // else if (req.body.students.keys.length < 1)
+  //   errMsg = "Students field is required";
   else if (!req.body.classId) errMsg = "Class Id is required";
   else if (!req.body.subjectId) errMsg = "Subject Id is required";
   else if (!req.body.date) errMsg = "Date is required";
 
   var sDate = null;
   try {
-    sDate = Date.parse(req.body.date);
+    sDate = new Date(Date.parse(req.body.date));
   } catch (err) {
     errMsg = "Invalid date format";
   }
@@ -29,60 +31,103 @@ async function postAttendanceForSingleSubject(req, res) {
       message: errMsg,
     });
 
+  // console.log(sDate);
+  // console.log(sDate.toISOString());
+
   const classId = mongoose.Types.ObjectId(req.body.classId);
 
-  const classData = await ClassControllers.getClassByIdAndProjection(classId, {
-    students: 1,
-    subjects: 1,
-  });
-
-  if (!classData || !classData._id) {
-    return res.status(400).json({
-      status: errors.FAILED,
-      message: "Class not found",
-    });
-  }
-
-  // check if subject is available
-  const subject = new String(req.body.subjectId).trim();
-  var isValidSubject = false;
-
-  classData.subjects.forEach((e) => {
-    const s = new String(e.subjectId).trim();
-    // console.log(s);
-    // console.log(subject);
-    // console.log(s == subject);
-    if (s == subject) {
-      isValidSubject = true;
-    }
-  });
-  if (!isValidSubject) {
-    return res.status(400).json({
-      status: errors.FAILED,
-      message: "Invalid subject",
-    });
-  }
-
-  // "studentId": "60bcb42809db206581791442",
-  // "hours": 1,
-  console.log(req.body);
-  const canPostAttendance = await await ClassControllers.getClassCountByConditionAndProjection(
-    { _id: classId, attendance: { $in: [sDate] } }
+  const classData = await Class.findOne(
+    { _id: classId },
+    { attendance: { $elemMatch: { date: sDate } }, students: 1 }
   );
-  if (canPostAttendance == 1) {
-    await StudentControllers.postAttendanceForASubject(classData.students);
 
-    return res.status(200).json({
-      status: success.SUCCESS,
-      message: "Attendance posted successfully",
-    });
-  } else {
+  if (!classData || classData.attendance.length == 0) {
     return res.status(403).json({
       status: errors.FAILED,
       message:
         "Attendance slot is not enabled on this day, please ask your moderator to enable slot",
     });
   }
+
+  // console.log(classData);
+
+  const slot = classData.attendance[0];
+  // console.log(slot);
+
+  // check if subject is present in the class's subjects and attendanceAlreadyPosted
+  const subject = new String(req.body.subjectId).trim();
+  var isValidSubject = false,
+    alreadyPosted = false;
+  var maxHoursForThisSubject = 0;
+  var sIndex = -1;
+
+  slot.subjects.forEach((e) => {
+    const s = new String(e.subjectId).trim();
+    // console.log(s);
+    // console.log(subject);
+    // console.log(s == subject);
+    // console.log(e);
+    if (s == subject) {
+      isValidSubject = true;
+      alreadyPosted = e.posted;
+      maxHoursForThisSubject = e.maxHours;
+    }
+    sIndex++;
+  });
+  var subjectError = null;
+  if (!isValidSubject) {
+    subjectError = "SubjectId is not valid";
+  }
+  if (alreadyPosted) {
+    subjectError = "Attendance for this subject already posted";
+  }
+  if (subjectError) {
+    return res.status(403).json({
+      status: errors.FAILED,
+      message: subjectError,
+    });
+  }
+  // console.log(classData);
+
+  // run through students list and check if all students are available
+  var unavailableStudents = [];
+  var attendanceList = {};
+  classData.students.forEach((e) => {
+    const sid = e.toString().trim();
+    var hrs = req.body.students[sid];
+    if (!hrs && hrs != 0) {
+      unavailableStudents.push(sid);
+    } else {
+      if (hrs > maxHoursForThisSubject) {
+        hrs = maxHoursForThisSubject;
+      }
+      attendanceList[e] = hrs ?? 0;
+      // attendanceList.set(e, hrs ?? 0);
+    }
+  });
+  if (unavailableStudents.length > 0) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "Attendance not specified for following students",
+      data: {
+        students: unavailableStudents,
+      },
+    });
+  }
+
+  await StudentControllers.postAttendanceForASubject(
+    classData.students,
+    attendanceList,
+    sDate,
+    subject
+  );
+  classData.attendance[0].subjects[sIndex - 1].posted = true;
+  await classData.save();
+
+  return res.status(200).json({
+    status: success.SUCCESS,
+    message: "Attendance posted successfully",
+  });
 }
 
 async function createAttendanceSlot(req, res) {
@@ -127,7 +172,7 @@ async function createAttendanceSlot(req, res) {
 
   classData.subjects.forEach((e) => {
     // check if unavailable
-    const sid = e.subjectId.toString().trim();
+    const sid = e.sId.toString().trim();
 
     var hoursForThisSubject = req.body.subjects[sid];
     // console.log(hoursForThisSubject);
@@ -136,7 +181,7 @@ async function createAttendanceSlot(req, res) {
     } else {
       totalHours += hoursForThisSubject;
       subjectsList.push({
-        subjectId: e.subjectId,
+        subjectId: e.sId,
         maxHours: hoursForThisSubject ?? 0,
       });
     }
@@ -179,18 +224,15 @@ async function createAttendanceSlot(req, res) {
   const result = await ClassControllers.addAttendanceSlot(classId, subjectsMap);
 
   if (result.n == result.nModified) {
-    var subList = [];
+    var subList = {};
     classData.subjects.forEach((e) => {
-      subList.push({
-        subId: e.subjectId,
-        hours: 0,
-      });
+      subList[e.sId] = -1;
     });
 
     const attSlot = {
       date: sDate,
       classId: classData._id,
-      attendance: subList,
+      subjects: subList,
     };
 
     // create slots in students list also
@@ -257,6 +299,39 @@ async function getAttendanceSlotsForClass(req, res) {
       slots: cll[0].attendance,
     },
   });
+}
+
+async function getAttSlotForClassAndDate(classId, sDate) {
+  // console.log(sDate);
+  const cll = await Class.aggregate([
+    {
+      $match: { _id: classId },
+    },
+    {
+      $limit: 1,
+    },
+    {
+      $group: {
+        _id: "$_id",
+        attendance: { $addToSet: "$attendance" },
+        students: { $addToSet: "$students" },
+      },
+    },
+    { $unwind: "$attendance" },
+    {
+      $match: { attendance: { $elemMatch: { date: sDate } } },
+    },
+    {
+      $limit: 1,
+    },
+    {
+      $project: {
+        attendance: { date: 1, subjects: 1 },
+        students: 1,
+      },
+    },
+  ]);
+  return cll;
 }
 
 module.exports = {

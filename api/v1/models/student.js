@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 const { STUDENT_COLLECTION } = require("../utils/constants").collections;
 
-const subjectHoursSchema = new mongoose.Schema(
-  {
-    subId: { type: mongoose.Schema.Types.ObjectId },
-    hours: { Number, default: 0 },
-  },
-  { _id: false }
-);
+// const subjectHoursSchema = new mongoose.Schema(
+//   {
+//     subId: { type: mongoose.Schema.Types.ObjectId },
+//     hours: { Number, default: 0 },
+//   },
+//   { _id: false }
+// );
 
 var attendanceSchema = new mongoose.Schema(
   {
@@ -15,7 +15,7 @@ var attendanceSchema = new mongoose.Schema(
       type: Date,
     },
     classId: { type: mongoose.Schema.Types.ObjectId },
-    subjects: [subjectHoursSchema],
+    subjects: Map,
   },
   { _id: false }
 );

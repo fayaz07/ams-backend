@@ -316,6 +316,10 @@ async function getClassCountByConditionAndProjection(condition, projection) {
   return await Class.find(condition, projection).countDocuments();
 }
 
+async function getClassInstanceForAttendance(classId, sDate) {
+  return await Class.findOne({ _id: classId, "attendance.date": sDate });
+}
+
 async function fetchClassById(req, res) {
   var errMsg = "";
   if (!req.params.id) errMsg = "ClassId is required";
@@ -368,4 +372,5 @@ module.exports = {
   checkIfSlotIsCreated,
   fetchClassById,
   getClassessAssignedToMe,
+  getClassInstanceForAttendance,
 };

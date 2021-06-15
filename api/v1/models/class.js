@@ -17,7 +17,7 @@ var subTeacher = new mongoose.Schema(
 
 var subjectHour = new mongoose.Schema(
   {
-    sId: {
+    subjectId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       unique: true,
