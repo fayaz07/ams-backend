@@ -4,6 +4,7 @@ const ClassControllers = require("./class");
 const StudentControllers = require("./student");
 const mongoose = require("mongoose");
 const Class = require("../models/class");
+const Calendar = require("../utils/calendar");
 
 async function postAttendanceForSingleSubject(req, res) {
   var errMsg = null;
@@ -262,43 +263,129 @@ async function createAttendanceSlot(req, res) {
 }
 
 async function getAttendanceSlotsForClass(req, res) {
-  if (!req.params.classId) {
-    return res.status(400).json({
-      status: errors.FAILED,
-      message: "ClassId is required",
-    });
+  var errMsg = null;
+
+  if (!req.query.classId) {
+    errMsg = "ClassId is required";
+  }
+  if (!req.query.month) {
+    errMsg = "Month is required";
+  }
+  if (req.query.month < 1 || req.query.month > 12) {
+    errMsg = "Invalid value for month";
+  }
+  if (!req.query.year) {
+    errMsg = "Year is required";
+  }
+  if (req.query.year < 2021 || req.query.year > 2030) {
+    errMsg = "Invalid value for year";
   }
 
-  const cid = mongoose.Types.ObjectId(req.params.classId);
+  if (errMsg)
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: errMsg,
+    });
 
+  const cid = mongoose.Types.ObjectId(req.query.classId);
+  const { start, end } = Calendar.getStartEndDatesByMonthYear(
+    req.query.month,
+    req.query.year
+  );
+
+  if (req.query.subjects) {
+    const cll = await slotsWithSubjects(cid, start, end);
+
+    if (cll.length > 0) console.log(cll[0].attendance);
+
+    return res.status(200).json({
+      status: success.SUCCESS,
+      message: "Fetched slots with subjects",
+      data: {
+        slots: cll,
+      },
+    });
+  } else {
+    const cll = await slotsWithOutSubjects(cid, start, end);
+
+    return res.status(200).json({
+      status: success.SUCCESS,
+      message: "Fetched slots",
+      data: {
+        slots: cll,
+      },
+    });
+  }
+}
+
+async function slotsWithSubjects(cid, start, end) {
   const cll = await Class.aggregate([
     {
       $match: { _id: cid },
     },
     {
-      $limit: 1,
-    },
-    {
-      $group: { _id: "$_id", attendance: { $addToSet: "$attendance" } },
-    },
-    { $project: { attendance: { date: 1, subjects: 1 } } },
-    { $unwind: "$attendance" },
-    {
-      $sort: { "attendance.date": 1 },
-    },
-    {
-      $limit: 10,
+      $project: {
+        attendance: {
+          $filter: {
+            input: "$attendance",
+            as: "arr",
+            cond: {
+              $and: [
+                { $gte: ["$$arr.date", start] },
+                { $lte: ["$$arr.date", end] },
+              ],
+            },
+          },
+        },
+      },
     },
   ]);
-  //console.log(cll);
+  var res = {};
+  if (cll.length > 0) {
+    cll[0].attendance.forEach((e) => {
+      res[new Date(e.date).toISOString()] = e.subjects;
+    });
+  }
 
-  return res.status(200).json({
-    status: success.SUCCESS,
-    message: "Fetched slots",
-    data: {
-      slots: cll[0].attendance,
+  return res;
+}
+
+async function slotsWithOutSubjects(cid, start, end) {
+  const cll = await Class.aggregate([
+    {
+      $match: { _id: cid },
     },
-  });
+    {
+      $project: {
+        attendance: {
+          $filter: {
+            input: "$attendance",
+            as: "arr",
+            cond: {
+              $and: [
+                { $gte: ["$$arr.date", start] },
+                { $lte: ["$$arr.date", end] },
+              ],
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        "attendance.subjects": 0,
+      },
+    },
+  ]);
+
+  var res = [];
+  if (cll.length > 0) {
+    cll[0].attendance.forEach((e) => {
+      res.push(e.date);
+    });
+  }
+
+  return res;
 }
 
 async function getAttSlotForClassAndDate(classId, sDate) {
@@ -338,4 +425,5 @@ module.exports = {
   postAttendanceForSingleSubject,
   createAttendanceSlot,
   getAttendanceSlotsForClass,
+  getAttSlotForClassAndDate,
 };

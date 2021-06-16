@@ -32,7 +32,7 @@ router.post(
 );
 
 router.get(
-  "/slots/:classId",
+  "/slots",
   AuthMiddlewares.checkAccessToken,
   AuthMiddlewares.validateAccessToken,
   AuthMiddlewares.checkInsTeacherAccess,

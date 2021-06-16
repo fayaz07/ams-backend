@@ -1008,7 +1008,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"IB\",\n    \"subjects\": [\"60c39f63bccb6d25c76dc7fb\", \"60c39f6bbccb6d25c76dc7fc\"]\n}",
+							"raw": "{\n    \"name\": \"XA\",\n    \"subjects\": [\"60c39f63bccb6d25c76dc7fb\", \"60c39f6bbccb6d25c76dc7fc\", \"60c90154ac8c1e64c650e0b9\"]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1044,7 +1044,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"teacherId\": \"60c39f98bccb6d25c76dc7fd\",\n    \"classId\": \"60c39fd2bccb6d25c76dc7ff\"\n}",
+							"raw": "{\n    \"teacherId\": \"60c39f98bccb6d25c76dc7fd\",\n    \"classId\": \"60c8bf3bcf9d612545a87f88\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1081,7 +1081,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"teacherId\": \"60c39f98bccb6d25c76dc7fd\",\n    \"classId\": \"60c39fd2bccb6d25c76dc7ff\",\n    \"subjectId\": \"60c39f6bbccb6d25c76dc7fc\"\n}",
+							"raw": "{\n    \"teacherId\": \"60c39f98bccb6d25c76dc7fd\",\n    \"classId\": \"60c8bf3bcf9d612545a87f88\",\n    \"subjectId\": \"60c39f6bbccb6d25c76dc7fc\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1267,14 +1267,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/student/class/60c39fd2bccb6d25c76dc7ff",
+							"raw": "{{baseUrl}}/student/class/60c8bf3bcf9d612545a87f88",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"student",
 								"class",
-								"60c39fd2bccb6d25c76dc7ff"
+								"60c8bf3bcf9d612545a87f88"
 							]
 						}
 					},
@@ -1297,7 +1297,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Dawid warner\",\n    \"classId\": \"60c639cfee9f7072410e68f4\",\n    \"rollNumber\": \"A1234\",\n    \"phone\": \"9123456792\"\n}",
+							"raw": "{\n    \"name\": \"Siraj\",\n    \"classId\": \"60c8bf3bcf9d612545a87f88\",\n    \"rollNumber\": \"A123\",\n    \"phone\": \"9123456792\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1366,7 +1366,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"date\": \"2021-06-17\",\n    \"classId\": \"60c639cfee9f7072410e68f4\",\n    \"subjects\": {\n        \"60c39f63bccb6d25c76dc7fb\": 3,\n        \"60c39f6bbccb6d25c76dc7fc\": 3\n    }\n}",
+							"raw": "{\n    \"date\": \"2021-07-12\",\n    \"classId\": \"60c901caac8c1e64c650e0ba\",\n    \"subjects\": {\n        \"60c39f63bccb6d25c76dc7fb\": 3,\n        \"60c39f6bbccb6d25c76dc7fc\": 2,\n        \"60c90154ac8c1e64c650e0b9\": 3\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1388,7 +1388,7 @@
 					"response": []
 				},
 				{
-					"name": "post attendance for multiple students",
+					"name": "post attendance for single subject",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1404,7 +1404,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"date\": \"2021-06-06\",\n    \"classId\": \"60bc9602d6557e4efdf22b10\",\n    \"attendance\": {\n        \"60bcb42809db206581791442\": 2\n    },\n    \"subjectId\": \"60bc95e3d6557e4efdf22b0e\"\n}",
+							"raw": "{\n    \"date\": \"2021-06-17T00:00:00.000Z\",\n    \"classId\": \"60c8bf3bcf9d612545a87f88\",\n    \"students\": {\n        \"60c8c341c9aa8e27fd6a351f\": 2,\n        \"60c8c34cc9aa8e27fd6a3520\": 3\n    },\n    \"subjectId\": \"60c39f63bccb6d25c76dc7fb\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1412,13 +1412,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/attendance/multiple",
+							"raw": "{{baseUrl}}/attendance/subject/single",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"attendance",
-								"multiple"
+								"subject",
+								"single"
 							]
 						}
 					},
@@ -1440,19 +1441,77 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/attendance/slots/:classId",
+							"raw": "{{baseUrl}}/attendance/slots?classId=60c901caac8c1e64c650e0ba&month=6&year=2021",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"attendance",
-								"slots",
-								":classId"
+								"slots"
 							],
-							"variable": [
+							"query": [
 								{
 									"key": "classId",
-									"value": "60c639cfee9f7072410e68f4"
+									"value": "60c901caac8c1e64c650e0ba"
+								},
+								{
+									"key": "month",
+									"value": "6"
+								},
+								{
+									"key": "year",
+									"value": "2021"
+								},
+								{
+									"key": "subjects",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get attendance slots with subjects",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/attendance/slots?classId=60c901caac8c1e64c650e0ba&month=6&year=2021&subjects=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"attendance",
+								"slots"
+							],
+							"query": [
+								{
+									"key": "classId",
+									"value": "60c901caac8c1e64c650e0ba"
+								},
+								{
+									"key": "month",
+									"value": "6"
+								},
+								{
+									"key": "year",
+									"value": "2021"
+								},
+								{
+									"key": "subjects",
+									"value": "true"
 								}
 							]
 						}
