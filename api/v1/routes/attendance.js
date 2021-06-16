@@ -45,4 +45,18 @@ router.get(
   }
 );
 
+router.get(
+  "/student/report/month",
+  AuthMiddlewares.checkAccessToken,
+  AuthMiddlewares.validateAccessToken,
+  AuthMiddlewares.checkInsTeacherAccess,
+  async (req, res) => {
+    try {
+      await AttendanceControllers.getStudentAttendanceReportByMonth(req, res);
+    } catch (error) {
+      internalServerError(res, error);
+    }
+  }
+);
+
 module.exports = router;

@@ -5,6 +5,7 @@ const StudentControllers = require("./student");
 const mongoose = require("mongoose");
 const Class = require("../models/class");
 const Calendar = require("../utils/calendar");
+const Student = require("../models/student");
 
 async function postAttendanceForSingleSubject(req, res) {
   var errMsg = null;
@@ -227,7 +228,7 @@ async function createAttendanceSlot(req, res) {
   if (result.n == result.nModified) {
     var subList = {};
     classData.subjects.forEach((e) => {
-      subList[e.sId] = -1;
+      subList[e.sId] = 0;
     });
 
     const attSlot = {
@@ -421,9 +422,151 @@ async function getAttSlotForClassAndDate(classId, sDate) {
   return cll;
 }
 
+async function getStudentAttendanceReportByMonth(req, res) {
+  var errMsg = null;
+
+  if (!req.query.studentId) {
+    errMsg = "StudentId is required";
+  }
+  if (!req.query.month) {
+    errMsg = "Month is required";
+  }
+  if (req.query.month < 1 || req.query.month > 12) {
+    errMsg = "Invalid value for month";
+  }
+  if (!req.query.year) {
+    errMsg = "Year is required";
+  }
+  if (req.query.year < 2021 || req.query.year > 2030) {
+    errMsg = "Invalid value for year";
+  }
+
+  if (errMsg)
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: errMsg,
+    });
+
+  const sId = mongoose.Types.ObjectId(req.query.studentId);
+  const { start, end } = Calendar.getStartEndDatesByMonthYear(
+    req.query.month,
+    req.query.year
+  );
+
+  const studentAttendance = await Student.aggregate([
+    {
+      $match: { _id: sId },
+    },
+    {
+      $project: {
+        classId: 1,
+        attendance: {
+          $filter: {
+            input: "$attendance",
+            as: "arr",
+            cond: {
+              $and: [
+                { $gte: ["$$arr.date", start] },
+                { $lte: ["$$arr.date", end] },
+              ],
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        attendance: {
+          classId: 0,
+          date: 0,
+        },
+      },
+    },
+  ]);
+  // console.log(studentAttendance[0]);
+  // console.log(studentAttendance[0].attendance);
+
+  const maxHoursSubjectMap = await Class.aggregate([
+    {
+      $match: { _id: studentAttendance[0].classId },
+    },
+    {
+      $project: {
+        subjects: 1,
+        attendance: {
+          $filter: {
+            input: "$attendance",
+            as: "arr",
+            cond: {
+              $and: [
+                { $gte: ["$$arr.date", start] },
+                { $lte: ["$$arr.date", end] },
+              ],
+            },
+          },
+        },
+      },
+    },
+  ]);
+
+  // console.log(maxHoursSubjectMap);
+  // console.log(maxHoursSubjectMap[0].attendance);
+
+  var report = {};
+
+  const temp = maxHoursSubjectMap[0].subjects;
+  for (i = 0; i < temp.length; i++) {
+    // console.log(temp[i]);
+    const t = temp[i];
+    report[t.sId.toString()] = { tId: t.tId, attended: 0, held: 0 };
+  }
+
+  const studentArr = studentAttendance[0].attendance;
+  const subArr = maxHoursSubjectMap[0].attendance;
+
+  for (var i = 0; i < studentArr.length; i++) {
+    // attendance slots total
+    subArr[i].subjects.forEach((ss) => {
+      // if (ss.posted) {
+      // console.log(ss);
+      // console.log(report.get(ss.subjectId.toString()));
+      // console.log(st.subjects[ss.subjectId.toString()]);
+      // console.log("-------------");
+      // }
+      const t = report[ss.subjectId.toString()];
+      t.attended += parseInt(studentArr[i].subjects[ss.subjectId.toString()]);
+      t.held += parseInt(ss.maxHours);
+      report[ss.subjectId.toString()] = t;
+    });
+  }
+
+  // console.log(report);
+
+  /*
+    {
+      sub: {
+      teacher: 
+      attended:
+      held:
+      }
+    }
+  */
+
+  return res.status(200).json({
+    status: success.SUCCESS,
+    message: "Fetched attendance report",
+    data: {
+      report: report,
+      startDate: start,
+      endDate: end,
+    },
+  });
+}
+
 module.exports = {
   postAttendanceForSingleSubject,
   createAttendanceSlot,
   getAttendanceSlotsForClass,
   getAttSlotForClassAndDate,
+  getStudentAttendanceReportByMonth,
 };
