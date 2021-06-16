@@ -138,7 +138,7 @@ async function assignClassTeacher(req, res) {
       });
     }
 
-    classInstance.classTeacher = teacher._id;
+    classInstance.classTeacher = mongoose.Types.ObjectId(req.body.teacherId);
     const updated = await classInstance.save();
     if (updated) {
       return res.status(200).json({
@@ -256,7 +256,7 @@ async function assignSubjectTeacher(req, res) {
     }
     // console.log(subIndex);
     const subTeacher = classInstance.subjects[subIndex];
-    subTeacher.tId = teacher._id;
+    subTeacher.tId = mongoose.Types.ObjectId(req.body.teacherId);
 
     classInstance.subjects[i] = subTeacher;
 
