@@ -7,7 +7,7 @@ router.post(
   "/register",
   AuthMiddlewares.checkAccessToken,
   AuthMiddlewares.validateAccessToken,
-  AuthMiddlewares.checkInsAdminAccess,
+  AuthMiddlewares.checkInsModeratorAccess,
   async (req, res) => {
     try {
       await InsTeacherControllers.createInsTeacher(req, res);

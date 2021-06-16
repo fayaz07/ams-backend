@@ -158,7 +158,7 @@ module.exports.registerInstituteUser = async (data) => {
 
     if (savedUser) {
       savedUser.firstName = data.name.toString().split(" ")[0];
-      savedUser.lastName = data.name.toString().split(" ")[1];
+      savedUser.lastName = data.name.toString().split(" ").shift().join(" ");
 
       const userSaved = await UserControllers.createInstituteUser({
         email: data.email,

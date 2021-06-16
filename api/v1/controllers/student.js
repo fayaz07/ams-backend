@@ -7,7 +7,7 @@ async function createStudent(req, res) {
   var errMsg = null;
   if (!req.body.name) errMsg = "Student name is required";
   else if (!req.body.classId) errMsg = "Class Id is required";
-  else if (!req.body.rollNumber) errMsg = "Roll Number Id is required";
+  else if (!req.body.rollNumber) errMsg = "Roll Number is required";
 
   if (errMsg)
     return res.status(400).json({
