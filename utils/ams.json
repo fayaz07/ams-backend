@@ -1008,7 +1008,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"XA\",\n    \"subjects\": [\"60c39f63bccb6d25c76dc7fb\", \"60c39f6bbccb6d25c76dc7fc\", \"60c90154ac8c1e64c650e0b9\"]\n}",
+							"raw": "{\n    \"name\": \"XC\",\n    \"subjects\": [\"60c39f63bccb6d25c76dc7fb\", \"60c39f6bbccb6d25c76dc7fc\", \"60c90154ac8c1e64c650e0b9\"],\n    \"startDate\": \"2020-06-06\",\n    \"endDate\": \"2021-05-10\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1368,7 +1368,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}/attendance/student/report/month?studentId=60c90242ac8c1e64c650e0bb&month=6&year=2021",
+									"raw": "{{baseUrl}}/attendance/student/report/month?studentId=60c90242ac8c1e64c650e0bb&month=8&year=2021",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1382,6 +1382,60 @@
 										{
 											"key": "studentId",
 											"value": "60c90242ac8c1e64c650e0bb"
+										},
+										{
+											"key": "month",
+											"value": "8"
+										},
+										{
+											"key": "year",
+											"value": "2021"
+										},
+										{
+											"key": "subjects",
+											"value": "true",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "class",
+					"item": [
+						{
+							"name": "get class attendance report",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/attendance/class/report/month?classId=60c901caac8c1e64c650e0ba&month=6&year=2021",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"attendance",
+										"class",
+										"report",
+										"month"
+									],
+									"query": [
+										{
+											"key": "classId",
+											"value": "60c901caac8c1e64c650e0ba"
 										},
 										{
 											"key": "month",

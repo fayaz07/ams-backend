@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const Class = require("../models/class");
 const Calendar = require("../utils/calendar");
 const Student = require("../models/student");
+const Subject = require("../models/subject");
 
 async function postAttendanceForSingleSubject(req, res) {
   var errMsg = null;
@@ -563,10 +564,210 @@ async function getStudentAttendanceReportByMonth(req, res) {
   });
 }
 
+async function getClassAttendanceReportByMonth(req, res) {
+  var errMsg = null;
+
+  if (!req.query.classId) {
+    errMsg = "ClassId is required";
+  }
+  if (!req.query.month) {
+    errMsg = "Month is required";
+  }
+  if (req.query.month < 1 || req.query.month > 12) {
+    errMsg = "Invalid value for month";
+  }
+  if (!req.query.year) {
+    errMsg = "Year is required";
+  }
+  if (req.query.year < 2021 || req.query.year > 2030) {
+    errMsg = "Invalid value for year";
+  }
+
+  if (errMsg)
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: errMsg,
+    });
+
+  const cId = mongoose.Types.ObjectId(req.query.classId);
+  const { start, end } = Calendar.getStartEndDatesByMonthYear(
+    req.query.month,
+    req.query.year
+  );
+
+  const classAttendanceHours = await Class.aggregate([
+    {
+      $match: { _id: cId },
+    },
+    {
+      $project: {
+        subjects: 1,
+        // students: 1,
+        attendance: {
+          $filter: {
+            input: "$attendance",
+            as: "arr",
+            cond: {
+              $and: [
+                { $gte: ["$$arr.date", start] },
+                { $lte: ["$$arr.date", end] },
+              ],
+            },
+          },
+        },
+      },
+    },
+  ]);
+  // console.log(classAttendanceHours);
+  // console.log(classAttendanceHours[0].attendance);
+
+  // building student-teacher map and sub-hours map model
+  /**
+   *  {
+   *    sub1: 4,
+   *    sub2: 3
+   *  }
+   */
+  const subHoursMapModel = {};
+  const subjectTeacherMap = {};
+
+  const subjectsTeachersArr = classAttendanceHours[0].subjects;
+  const subjectsArr = [];
+  for (i = 0; i < subjectsTeachersArr.length; i++) {
+    // console.log(temp[i]);
+    const t = subjectsTeachersArr[i];
+    subjectTeacherMap[t.sId.toString()] = t.tId;
+    subHoursMapModel[t.sId.toString()] = 0;
+    subjectsArr.push(t.sId);
+  }
+
+  // pull subjects
+  const subjectNames = await Subject.find({ _id: subjectsArr }, { name: 1 });
+
+  const subjectNamesMap = {};
+  for (var i = 0; i < subjectNames.length; i++) {
+    subjectNamesMap[subjectNames[i]._id.toString()] = subjectNames[i].name;
+  }
+
+  // console.log(subHoursMap);
+  // console.log(subjectTeacherMap);
+
+  /**
+   *  {
+   *    date1: {
+   *      sub1: 4,
+   *      sub2: 3
+   *    }
+   *  }
+   */
+  const subHoursMap = Object.assign({}, subHoursMapModel);
+  // build dates - subjects - heldHours map
+  const attendanceArr = classAttendanceHours[0].attendance;
+  for (i = 0; i < attendanceArr.length; i++) {
+    // console.log(attendanceArr[i]);
+    const t = attendanceArr[i];
+    t.subjects.forEach((s) => {
+      if (s.posted) {
+        subHoursMap[s.subjectId.toString()] += parseInt(s.maxHours);
+      }
+    });
+  }
+  // console.log(subHoursMap);
+  // console.log(subHoursMapModel);
+
+  const studentsArr = await Student.aggregate([
+    {
+      $match: { classId: cId },
+    },
+    {
+      $project: {
+        // classId: 1,
+        name: 1,
+        rollNumber: 1,
+        attendance: {
+          $filter: {
+            input: "$attendance",
+            as: "arr",
+            cond: {
+              $and: [
+                { $gte: ["$$arr.date", start] },
+                { $lte: ["$$arr.date", end] },
+                { $eq: ["$$arr.classId", cId] },
+              ],
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        attendance: {
+          classId: 0,
+          date: 0,
+        },
+      },
+    },
+  ]);
+  // console.log(studentsArr[0]);
+  // console.log(studentAttendance[0].attendance);
+
+  const stAttReport = [];
+
+  // loop through students
+  for (i = 0; i < studentsArr.length; i++) {
+    const student = studentsArr[i];
+    const report = Object.assign({}, subHoursMapModel);
+
+    // looping through attendances
+    // console.log("Initial report");
+    student.attendance.forEach((subs) => {
+      // looping through subjects
+      subjectsArr.forEach((s) => {
+        // console.log(s);
+        // console.log(subs);
+        report[s] += parseInt(subs.subjects[s]);
+      });
+    });
+    // console.log(report);
+    // console.log("report end --------");
+
+    const subAttendance = {};
+    for (const [key, value] of Object.entries(report)) {
+      // console.log(key, value);
+      subAttendance[subjectNamesMap[key]] = value;
+    }
+
+    const st = {};
+    st.id = student.rollNumber;
+    st.name = student.name;
+    st.subjects = subAttendance;
+    stAttReport.push(st);
+  }
+
+  const heldHrsWithSubNames = {};
+  for (const [key, value] of Object.entries(subHoursMap)) {
+    // console.log(key, value);
+    heldHrsWithSubNames[subjectNamesMap[key]] = value;
+  }
+
+  return res.status(200).json({
+    status: success.SUCCESS,
+    message: "Fetched attendance report for class",
+    data: {
+      // subjects: subjectNamesMap,
+      report: stAttReport,
+      held: heldHrsWithSubNames,
+      startDate: start,
+      endDate: end,
+    },
+  });
+}
+
 module.exports = {
   postAttendanceForSingleSubject,
   createAttendanceSlot,
   getAttendanceSlotsForClass,
   getAttSlotForClassAndDate,
   getStudentAttendanceReportByMonth,
+  getClassAttendanceReportByMonth,
 };
