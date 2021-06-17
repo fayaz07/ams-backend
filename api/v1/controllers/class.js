@@ -13,6 +13,8 @@ async function createClass(req, res) {
     errMsg = "Subjects must be an array";
   else if (req.body.subjects.length < 1)
     errMsg = "Atleast one subject is required";
+  else if (!req.body.startDate) errMsg = "Academic start date is required";
+  else if (!req.body.endDate) errMsg = "Academic end date is required";
 
   if (errMsg)
     return res.status(400).json({
@@ -44,12 +46,34 @@ async function createClass(req, res) {
       message: "Sujects must be valid",
     });
   }
+  var startDate, endDate;
+  try {
+    startDate = new Date(Date.parse(req.body.startDate));
+    endDate = new Date(Date.parse(req.body.endDate));
+  } catch (err) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "StartDate, EndDate must be in valid format",
+    });
+  }
+
+  const days = Math.abs(endDate - startDate) / (60 * 60 * 24 * 1000);
+
+  if (days < 20 || days > 365) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message:
+        "Number of  functioning days in academic year must be between 20 and 365 days",
+    });
+  }
 
   const subject = new Class({
     name: req.body.name,
     instituteId: req.authUser.instituteId,
     createdBy: req.authUser.userId,
     subjects: subIds,
+    startDate: startDate,
+    endDate: endDate,
   });
 
   try {
@@ -65,6 +89,7 @@ async function createClass(req, res) {
     return res.status(403).json({
       status: errors.FAILED,
       message: "Unable to create class",
+      error: err,
     });
   }
 }

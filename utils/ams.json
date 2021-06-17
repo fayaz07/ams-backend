@@ -1350,6 +1350,60 @@
 			"name": "attendance",
 			"item": [
 				{
+					"name": "student",
+					"item": [
+						{
+							"name": "get student attendance report",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/attendance/student/report/month?studentId=60c90242ac8c1e64c650e0bb&month=6&year=2021",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"attendance",
+										"student",
+										"report",
+										"month"
+									],
+									"query": [
+										{
+											"key": "studentId",
+											"value": "60c90242ac8c1e64c650e0bb"
+										},
+										{
+											"key": "month",
+											"value": "6"
+										},
+										{
+											"key": "year",
+											"value": "2021"
+										},
+										{
+											"key": "subjects",
+											"value": "true",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "create attendance slot",
 					"request": {
 						"auth": {

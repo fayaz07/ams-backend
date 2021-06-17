@@ -19,8 +19,7 @@ var subjectHour = new mongoose.Schema(
   {
     subjectId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      unique: true,
+      default: null,
     },
     maxHours: {
       type: Number,
@@ -39,7 +38,6 @@ var attendanceSlot = new mongoose.Schema(
   {
     date: {
       type: Date,
-      unique: true,
     },
     subjects: [subjectHour],
   },
@@ -75,6 +73,14 @@ const classSchema = new mongoose.Schema(
     attendance: {
       type: [attendanceSlot],
       default: [],
+    },
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
     },
   },
   {
