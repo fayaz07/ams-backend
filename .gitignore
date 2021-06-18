@@ -9,3 +9,5 @@ keys/publicr.pem
 
 .nyc_output
 creds.txt
+
+test.js

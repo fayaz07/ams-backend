@@ -26,8 +26,10 @@ async function createUser(userData) {
 
 async function createInstituteUser(userData) {
   var user = new User(userData);
+  // console.log(user);
   try {
     const saved = await user.save();
+    // console.log(saved);
     return { success: true, data: saved };
   } catch (err) {
     return { success: false, error: err };

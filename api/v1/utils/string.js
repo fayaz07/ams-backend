@@ -2,7 +2,11 @@ function createUsername(name) {
   var username;
   const arr = name.split(" ");
   if (arr.length > 1) {
-    username = arr[arr.length - 1] + "." + arr[0].toString().substring(0, 1);
+    if (arr[1].length < 4) {
+      username = arr[0] + "." + arr[1].toString().substring(0, 1);
+    } else {
+      username = arr[1] + "." + arr[0].toString().substring(0, 1);
+    }
   } else {
     username = name;
   }

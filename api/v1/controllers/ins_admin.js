@@ -28,7 +28,7 @@ async function createInsAdmin(req, res) {
     role: AccountRoles.accRoles.instituteAdmin,
   });
 
-  //  console.log(adminCreated);
+  // console.log(adminCreated);
 
   if (adminCreated.success) {
     return res.status(200).json({

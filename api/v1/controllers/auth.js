@@ -120,13 +120,19 @@ module.exports.registerAsAdmin = async (req, res) => {
 
 module.exports.registerInstituteUser = async (data) => {
   const username = StringUtils.createUsername(data.name);
+  // console.log(username);
 
   const availableUsername = await findAvailableUsername(username);
+
+  // console.log(availableUsername);
 
   data.email = availableUsername + emailSuffix;
 
   // check if user exists
   var authUser = await getAuthUserByEmail(data.email);
+
+  // console.log(data);
+  // console.log(authUser);
 
   // never comes to this stage
   if (authUser) return { success: false, message: Errors.EMAIL_IN_USE };
@@ -157,13 +163,17 @@ module.exports.registerInstituteUser = async (data) => {
     const savedUser = await newAuthUser.save();
 
     if (savedUser) {
-      savedUser.firstName = data.name.toString().split(" ")[0];
-      savedUser.lastName = data.name.toString().split(" ").shift().join(" ");
-
+      console.log("looks like saved");
+      // console.log(savedUser);
+      const nameArr = data.name.toString().split(" ");
+      const firstName = nameArr[0];
+      nameArr.shift();
+      const lastName = nameArr.join(" ");
+      // console.log(savedUser);
       const userSaved = await UserControllers.createInstituteUser({
         email: data.email,
-        firstName: savedUser.firstName,
-        lastName: savedUser.lastName,
+        firstName: firstName,
+        lastName: lastName,
         username: availableUsername,
         instituteId: data.instituteId,
         createdBy: data.createdBy,
@@ -173,6 +183,7 @@ module.exports.registerInstituteUser = async (data) => {
         regId: data.regId,
         phone: data.phone,
       });
+      // console.log(userSaved);
       if (userSaved.success) {
         return {
           success: true,
@@ -196,6 +207,7 @@ module.exports.registerInstituteUser = async (data) => {
       message: Errors.REGISTER_FAILED,
     };
   } catch (err) {
+    // console.log(err);
     return {
       success: false,
       message: Errors.REGISTER_FAILED,
