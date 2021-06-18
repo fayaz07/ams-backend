@@ -54,6 +54,11 @@ function isLeapYear(year) {
   return false;
 }
 
+function makeTimeZeroForDate(date) {
+  return new Date(Date.parse(date.toString().substr(0, 10) + "T00:00:00.000Z"));
+}
+
 module.exports = {
   getStartEndDatesByMonthYear,
+  makeTimeZeroForDate,
 };

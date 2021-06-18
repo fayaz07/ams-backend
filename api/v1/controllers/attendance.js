@@ -24,6 +24,7 @@ async function postAttendanceForSingleSubject(req, res) {
   var sDate = null;
   try {
     sDate = new Date(Date.parse(req.body.date));
+    sDate = Calendar.makeTimeZeroForDate(sDate);
   } catch (err) {
     errMsg = "Invalid date format";
   }
@@ -144,6 +145,7 @@ async function createAttendanceSlot(req, res) {
   var sDate = null;
   try {
     sDate = Date.parse(req.body.date);
+    sDate = Calendar.makeTimeZeroForDate(sDate);
   } catch (err) {
     errMsg = "Invalid date format";
   }

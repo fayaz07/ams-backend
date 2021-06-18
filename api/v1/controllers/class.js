@@ -4,6 +4,7 @@ const success = require("../utils/constants").successMessages;
 const { getSubjectsIdsFromIdsArray } = require("./subject");
 const UserControllers = require("./user");
 const mongoose = require("mongoose");
+const Calendar = require("../utils/calendar");
 
 async function createClass(req, res) {
   var errMsg = null;
@@ -49,7 +50,9 @@ async function createClass(req, res) {
   var startDate, endDate;
   try {
     startDate = new Date(Date.parse(req.body.startDate));
+    startDate = Calendar.makeTimeZeroForDate(startDate);
     endDate = new Date(Date.parse(req.body.endDate));
+    endDate = Calendar.makeTimeZeroForDate(endDate);
   } catch (err) {
     return res.status(400).json({
       status: errors.FAILED,
