@@ -435,6 +435,7 @@ module.exports.checkInsAdminAccess = async (req, res, next) => {
   ) {
     req.institute = institute;
     req.authUser = insAdmin;
+    req.role = authUser.role;
     next();
   } else {
     return res.status(401).json({
@@ -491,6 +492,7 @@ module.exports.checkInsModeratorAccess = async (req, res, next) => {
   ) {
     req.institute = institute;
     req.authUser = insAdmin;
+    req.role = authUser.role;
     next();
   } else {
     return res.status(401).json({
@@ -549,6 +551,7 @@ module.exports.checkInsTeacherAccess = async (req, res, next) => {
   ) {
     req.institute = institute;
     req.authUser = insAdmin;
+    req.role = authUser.role;
     next();
   } else {
     return res.status(401).json({

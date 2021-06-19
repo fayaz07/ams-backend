@@ -31,6 +31,7 @@ async function createStudent(req, res) {
     classId: classInstance._id,
     rollNumber: req.body.rollNumber,
     phone: req.body.phone,
+    fatherName: req.body.fatherName,
   });
 
   try {

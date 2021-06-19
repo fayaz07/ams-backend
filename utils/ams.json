@@ -69,7 +69,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"mallayya.v\",\n    \"password\": \"Cvx3f_9Va\"\n}",
+							"raw": "{\n    \"username\": \"jyothirmai\",\n    \"password\": \"T5Vdl$pM$\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1297,7 +1297,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Siraj\",\n    \"classId\": \"60c8bf3bcf9d612545a87f88\",\n    \"rollNumber\": \"A123\",\n    \"phone\": \"9123456792\"\n}",
+							"raw": "{\n    \"name\": \"Siraj\",\n    \"classId\": \"60c8bf3bcf9d612545a87f88\",\n    \"rollNumber\": \"A123\",\n    \"phone\": \"9123456792\",\n    \"fatherName\": \"Siraj\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1474,7 +1474,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"date\": \"2021-07-12\",\n    \"classId\": \"60c901caac8c1e64c650e0ba\",\n    \"subjects\": {\n        \"60c39f63bccb6d25c76dc7fb\": 3,\n        \"60c39f6bbccb6d25c76dc7fc\": 2,\n        \"60c90154ac8c1e64c650e0b9\": 3\n    }\n}",
+							"raw": "{\n    \"date\": \"2020-06-25T00:00:00.000Z\",\n    \"classId\": \"60cb7cacd61e207e763763a4\",\n    \"subjects\": {\n        \"60c39f63bccb6d25c76dc7fb\": 3,\n        \"60c39f6bbccb6d25c76dc7fc\": 2,\n        \"60c90154ac8c1e64c650e0b9\": 3\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1512,7 +1512,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"date\": \"2021-06-17T00:00:00.000Z\",\n    \"classId\": \"60c8bf3bcf9d612545a87f88\",\n    \"students\": {\n        \"60c8c341c9aa8e27fd6a351f\": 2,\n        \"60c8c34cc9aa8e27fd6a3520\": 3\n    },\n    \"subjectId\": \"60c39f63bccb6d25c76dc7fb\"\n}",
+							"raw": "{\n    \"date\": \"2021-06-21T18:30:00.000Z\",\n    \"classId\": \"60ce030caa91a377658eab78\",\n    \"students\": {\n        \"60ce0386aa91a377658eab79\": 2,\n        \"60ce0395aa91a377658eab7a\": 3\n    },\n    \"subjectId\": \"60ce01f7aa91a377658eab73\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1549,7 +1549,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/attendance/slots?classId=60c901caac8c1e64c650e0ba&month=6&year=2021",
+							"raw": "{{baseUrl}}/attendance/slots?classId=60ce030caa91a377658eab78&month=6&year=2021",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1560,7 +1560,7 @@
 							"query": [
 								{
 									"key": "classId",
-									"value": "60c901caac8c1e64c650e0ba"
+									"value": "60ce030caa91a377658eab78"
 								},
 								{
 									"key": "month",

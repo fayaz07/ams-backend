@@ -7,6 +7,7 @@ const Class = require("../models/class");
 const Calendar = require("../utils/calendar");
 const Student = require("../models/student");
 const Subject = require("../models/subject");
+const AccountContants = require("../utils/constants").account;
 
 async function postAttendanceForSingleSubject(req, res) {
   var errMsg = null;
@@ -42,7 +43,12 @@ async function postAttendanceForSingleSubject(req, res) {
 
   const classData = await Class.findOne(
     { _id: classId },
-    { attendance: { $elemMatch: { date: sDate } }, students: 1 }
+    {
+      attendance: { $elemMatch: { date: sDate } },
+      students: 1,
+      subjects: 1,
+      classTeacher: 1,
+    }
   );
 
   if (!classData || classData.attendance.length == 0) {
@@ -63,7 +69,6 @@ async function postAttendanceForSingleSubject(req, res) {
   var isValidSubject = false,
     alreadyPosted = false;
   var maxHoursForThisSubject = 0;
-  var sIndex = -1;
 
   slot.subjects.forEach((e) => {
     const s = new String(e.subjectId).trim();
@@ -76,8 +81,36 @@ async function postAttendanceForSingleSubject(req, res) {
       alreadyPosted = e.posted;
       maxHoursForThisSubject = e.maxHours;
     }
-    sIndex++;
   });
+
+  // req.role
+  // check if the user is admin/moderator
+  if (
+    req.role != AccountContants.accRoles.instituteAdmin &&
+    req.role != AccountContants.accRoles.instituteModerator
+  ) {
+    // not admin or not moderator
+    // check if the accessing user is classTeacher or current subject's teacher
+    if (classData.classTeacher.toString() != req.authUser.userId.toString()) {
+      let isSubjectTeacher = false;
+      classData.subjects.forEach((sub) => {
+        const s = new String(sub.sId).trim();
+        // console.log(sub);
+        if (s == subject) {
+          if (sub.tId.toString() == req.authUser.userId.toString()) {
+            isSubjectTeacher = true;
+          }
+        }
+      });
+      if (!isSubjectTeacher) {
+        return res.status(403).json({
+          status: errors.FAILED,
+          message: "You are not allowed to post attendance",
+        });
+      }
+    }
+  }
+
   var subjectError = null;
   if (!isValidSubject) {
     subjectError = "SubjectId is not valid";
@@ -125,7 +158,11 @@ async function postAttendanceForSingleSubject(req, res) {
     sDate,
     subject
   );
-  classData.attendance[0].subjects[sIndex - 1].posted = true;
+  classData.attendance[0].subjects.forEach((sub) => {
+    if (sub.subjectId.toString() == subject) {
+      sub.posted = true;
+    }
+  });
   await classData.save();
 
   return res.status(200).json({
@@ -161,12 +198,21 @@ async function createAttendanceSlot(req, res) {
   const classData = await ClassControllers.getClassByIdAndProjection(classId, {
     students: 1,
     subjects: 1,
+    startDate: 1,
+    endDate: 1,
   });
 
   if (!classData || !classData._id) {
     return res.status(400).json({
       status: errors.FAILED,
       message: "Class not found",
+    });
+  }
+
+  if (sDate < classData.startDate || sDate > classData.endDate) {
+    return res.status(400).json({
+      status: errors.FAILED,
+      message: "Slots can only be created within the academic year",
     });
   }
 

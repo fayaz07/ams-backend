@@ -41,6 +41,9 @@ const studentSchema = new mongoose.Schema(
     phone: {
       type: String,
     },
+    fatherName: {
+      type: String,
+    },
     photoUrl: {
       type: String,
       required: false,
